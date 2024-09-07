@@ -12,6 +12,7 @@ class PreoperacionalNotifier extends StateNotifier<Preoperacional> {
           inspecciones: formatInspecciones(),
           isOpen: false,
           typeKit: '',
+          observaciones: '', // Inicializar observaciones
         ));
 
   void updateCarId(String newCarId) {
@@ -43,6 +44,11 @@ class PreoperacionalNotifier extends StateNotifier<Preoperacional> {
 
   void updateDocId(String newDocId) {
     state = state.copyWith(docId: newDocId);
+  }
+
+  // Nuevo método para actualizar observaciones
+  void updateObservaciones(String newObservaciones) {
+    state = state.copyWith(observaciones: newObservaciones);
   }
 
   void updateDayOfWeek(
@@ -85,7 +91,7 @@ class PreoperacionalNotifier extends StateNotifier<Preoperacional> {
 }
 
 final newPreoperacionalProvider =
-    StateNotifierProvider.autoDispose<PreoperacionalNotifier, Preoperacional>((ref) {
+    StateNotifierProvider<PreoperacionalNotifier, Preoperacional>((ref) {
   return PreoperacionalNotifier();
 });
 

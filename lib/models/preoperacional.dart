@@ -12,6 +12,7 @@ class Preoperacional {
   final bool isOpen;
   final String typeKit;
   final String userId;
+  final String observaciones; // Nuevo campo de observaciones
 
   Preoperacional({
     this.docId = '',
@@ -20,6 +21,7 @@ class Preoperacional {
     required this.inspecciones,
     required this.isOpen,
     required this.typeKit,
+    this.observaciones = '', // Inicialización del campo
   }) : userId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
   Preoperacional copyWith({
@@ -29,6 +31,7 @@ class Preoperacional {
     bool? isOpen,
     String? typeKit,
     String? docId,
+    String? observaciones, // Para modificar las observaciones
   }) {
     return Preoperacional(
       carId: carId ?? this.carId,
@@ -37,6 +40,7 @@ class Preoperacional {
       isOpen: isOpen ?? this.isOpen,
       typeKit: typeKit ?? this.typeKit,
       docId: docId ?? this.docId,
+      observaciones: observaciones ?? this.observaciones, // Actualizar las observaciones
     );
   }
 
@@ -58,6 +62,7 @@ class Preoperacional {
       'isOpen': isOpen,
       'typeKit': typeKit,
       'userId': userId,
+      'observaciones': observaciones, // Incluir en el mapa
     };
   }
 
@@ -75,7 +80,7 @@ class Preoperacional {
       ),
       isOpen: map['isOpen'] ?? false,
       typeKit: map['typeKit'] ?? '',
-      
+      observaciones: map['observaciones'] ?? '', // Cargar las observaciones
     );
   }
 
@@ -86,7 +91,7 @@ class Preoperacional {
 
   @override
   String toString() {
-    return 'Preoperacional(carId: $carId, fecha: $fecha, inspecciones: $inspecciones, isOpen: $isOpen, typeKit: $typeKit, userId: $userId)';
+    return 'Preoperacional(carId: $carId, fecha: $fecha, inspecciones: $inspecciones, isOpen: $isOpen, typeKit: $typeKit, userId: $userId, observaciones: $observaciones)';
   }
 
   @override
@@ -99,7 +104,8 @@ class Preoperacional {
         mapEquals(other.inspecciones, inspecciones) &&
         other.isOpen == isOpen &&
         other.typeKit == typeKit &&
-        other.userId == userId;
+        other.userId == userId &&
+        other.observaciones == observaciones;
   }
 
   @override
@@ -109,6 +115,7 @@ class Preoperacional {
         inspecciones.hashCode ^
         isOpen.hashCode ^
         typeKit.hashCode ^
-        userId.hashCode;
+        userId.hashCode ^
+        observaciones.hashCode;
   }
 }
