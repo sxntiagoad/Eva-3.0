@@ -1,3 +1,4 @@
+import 'package:eva/presentation/new_preoperacional/widgets/observaciones.dart';
 import 'package:eva/providers/is_open.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -56,6 +57,9 @@ class NewPreoperacionalScree extends ConsumerWidget {
             SizedBox(height: 10),
             ListCategory(),
             SizedBox(height: 100),
+            Divider(),
+            ObservacionesWidget(),
+            SizedBox(height: 10),
           ],
         ),
       ),

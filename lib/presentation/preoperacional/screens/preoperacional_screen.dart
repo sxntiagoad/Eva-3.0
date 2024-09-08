@@ -1,4 +1,5 @@
 import 'package:eva/presentation/preoperacional/widgets/inspeccion_db/list_category_db.dart';
+import 'package:eva/presentation/preoperacional/widgets/observaciones_db.dart';
 import 'package:eva/presentation/preoperacional/widgets/uptate_preoperacional.dart';
 import 'package:eva/providers/is_open.dart';
 import 'package:eva/providers/preoperacionales_provider.dart';
@@ -92,7 +93,11 @@ class _PreoperacionalScreenState extends ConsumerState<PreoperacionalScreen> {
               ListCategoryDb(),
               SizedBox(
                 height: 100,
-              )
+              ),
+              Divider(),
+              ObservacionesDbWidget(),
+              SizedBox(height: 10),
+              
             ],
           ),
         ),
