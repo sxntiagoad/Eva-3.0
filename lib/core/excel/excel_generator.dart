@@ -45,7 +45,9 @@ Future<void> dataJson({
 
   data["PIE_TABLA"] = {
     "Nombre del Conductor": user.value?.fullName ?? '',
-    "OBSERVACIONES": ''
+    "OBSERVACIONES": preoperacional.observaciones.isNotEmpty
+        ? preoperacional.observaciones
+        : 'Sin observaciones',
   };
 
   await enviarJsonYSubirArchivoAFirebase(
