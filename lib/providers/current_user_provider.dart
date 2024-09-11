@@ -26,6 +26,7 @@ Future<MyUser> getCurrentUserFromFirestore() async {
             role: '',
             photoUrl: 'https://www.transparentpng.com/thumb/user/gray-user-profile-icon-png-fP8Q1P.png',
             password: '',
+            signature: '', // Añadimos el campo signature con un valor por defecto
           ).toMap();
     return MyUser.fromMap(currentUserAux);
   } else {

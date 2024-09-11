@@ -9,12 +9,15 @@ class MyUser {
   final String role;
   final String photoUrl;
   final String password;
+  final String? signature; // Nuevo campo para la firma
+
   MyUser({
     required this.fullName,
     required this.email,
     required this.role,
     this.photoUrl = notUserPhoto,
     required this.password,
+    this.signature, // Añadimos el campo signature
   });
 
   MyUser copyWith({
@@ -23,6 +26,7 @@ class MyUser {
     String? role,
     String? photoUrl,
     String? password,
+    String? signature, // Añadimos signature al copyWith
   }) {
     return MyUser(
       fullName: fullName ?? this.fullName,
@@ -30,6 +34,7 @@ class MyUser {
       role: role ?? this.role,
       photoUrl: photoUrl ?? this.photoUrl,
       password: password ?? this.password,
+      signature: signature ?? this.signature, // Incluimos signature
     );
   }
 
@@ -39,6 +44,7 @@ class MyUser {
       'email': email,
       'role': role,
       'photoUrl': photoUrl,
+      'signature': signature, // Añadimos signature al mapa
     };
   }
 
@@ -49,6 +55,7 @@ class MyUser {
       role: map['role'] ?? '',
       photoUrl: map['photoUrl'] ?? notUserPhoto,
       password: '',
+      signature: map['signature'], // Obtenemos signature del mapa
     );
   }
 
@@ -58,7 +65,7 @@ class MyUser {
 
   @override
   String toString() {
-    return 'User(fullName: $fullName, email: $email, role: $role, photoUrl: $photoUrl, password: $password)';
+    return 'User(fullName: $fullName, email: $email, role: $role, photoUrl: $photoUrl, password: $password, signature: $signature)';
   }
 
   @override
@@ -70,7 +77,8 @@ class MyUser {
         other.email == email &&
         other.role == role &&
         other.photoUrl == photoUrl &&
-        other.password == password;
+        other.password == password &&
+        other.signature == signature; // Incluimos signature en la comparación
   }
 
   @override
@@ -79,6 +87,7 @@ class MyUser {
         email.hashCode ^
         role.hashCode ^
         photoUrl.hashCode ^
-        password.hashCode;
+        password.hashCode ^
+        signature.hashCode; // Incluimos signature en el hashCode
   }
 }
