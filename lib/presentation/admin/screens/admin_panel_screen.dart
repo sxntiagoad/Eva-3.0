@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import './admin_cars.dart'; // Asegúrate de importar la clase AdminCars
 
@@ -56,44 +57,49 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width * 0.8, // 80% del ancho de la pantalla
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      decoration: BoxDecoration(
-        color: AppTheme.mainColor,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Icon(
-            icon,
-            color: Colors.white,
-            size: 24,
-          ),
-          Text(
-            text,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap: () {
+        context.push('/$navigateTo'); // Navega a la ruta especificada
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.8, // 80% del ancho de la pantalla
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        decoration: BoxDecoration(
+          color: AppTheme.mainColor,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              spreadRadius: 1,
+              blurRadius: 3,
+              offset: const Offset(0, 2),
             ),
-          ),
-          const Icon(
-            Icons.arrow_forward_ios,
-            color: Colors.white,
-            size: 18,
-          ),
-        ],
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Icon(
+              icon,
+              color: Colors.white,
+              size: 24,
+            ),
+            Text(
+              text,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.white,
+              size: 18,
+            ),
+          ],
+        ),
       ),
     );
   }

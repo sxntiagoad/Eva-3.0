@@ -6,8 +6,12 @@ import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'firebase_options.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {

@@ -28,3 +28,25 @@ final allPreoperacionalesProvider =
     FutureProvider.autoDispose<List<Preoperacional>>((ref) async {
   return await getAllPreoperacionales();
 });
+
+// Nuevo provider para obtener todos los preoperacionales sin importar 'isOpen' o 'userId'
+Future<List<Preoperacional>> getAllPreoperacionalesUnfiltered() async {
+  try {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('preoperacionales')
+        .get();
+
+    List<Preoperacional> preoperacionales = querySnapshot.docs.map((doc) {
+      return Preoperacional.fromMap(doc.data()).copyWith(docId: doc.id);
+    }).toList();
+
+    return preoperacionales;
+  } catch (e) {
+    rethrow;
+  }
+}
+
+final allPreoperacionalesUnfilteredProvider =
+    FutureProvider.autoDispose<List<Preoperacional>>((ref) async {
+  return await getAllPreoperacionalesUnfiltered();
+});
