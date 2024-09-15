@@ -68,12 +68,12 @@ class HomeScreen extends ConsumerWidget {
                   fontSize: 20,
                 ),
               ),
-              _CustomButton(
+              const _CustomButton(
                 icon: Icons.article_outlined,
                 text: 'Generar nuevo preoperacional',
                 navigateTo: NewPreoperacionalScree.name,
               ),
-              _CustomButton(
+              const _CustomButton(
                 icon: Icons.article_outlined,
                 text: 'Editar preoperacional ya existente',
                 navigateTo: ListPreoperacionalesScreen.name,

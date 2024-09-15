@@ -27,6 +27,7 @@ final excelFilesProvider = FutureProvider<List<String>>((ref) async {
 // Provider para obtener un Preoperacional por su UID
 final preoperacionalByUidProvider =
     FutureProvider.family<Preoperacional?, String>((ref, uid) async {
+  uid = uid.split('.')[0];
   final doc = await FirebaseFirestore.instance
       .collection('preoperacionales')
       .doc(uid)

@@ -2,6 +2,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class PreoperacionalesPage extends StatefulWidget {
+  const PreoperacionalesPage({super.key});
+
   @override
   _PreoperacionalesPageState createState() => _PreoperacionalesPageState();
 }

@@ -6,7 +6,7 @@ import 'package:eva/providers/excel_provider.dart';
 class CarPos extends ConsumerWidget {
   final Car car;
 
-  const CarPos({required this.car, Key? key}) : super(key: key);
+  const CarPos({required this.car, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
