@@ -1,22 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../providers/current_user_provider.dart';
 import '../../list_preoperacionales.dart/screens/list_preoperacionales_screen.dart';
 import '../../new_preoperacional/screens/new_preoperacional_scree.dart';
 import '../widgets/custom_drawer.dart';
-
-// Definir un provider para manejar la lista de archivos
-final archivosProvider = FutureProvider<List<String>>((ref) async {
-  FirebaseStorage storage = FirebaseStorage.instanceFor(
-    bucket: 'eva-project-91804.appspot.com', // Reemplaza con tu bucket real
-  );
-  ListResult resultado = await storage.ref('preoperacionales/').listAll();
-  return resultado.items.map((item) => item.name).toList();
-});
 
 class HomeScreen extends ConsumerWidget {
   static const name = 'home-screen';
@@ -26,7 +16,6 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final scaffoldKey = GlobalKey<ScaffoldState>();
     final userAsyncValue = ref.watch(currentUserProvider);
-    final archivosAsyncValue = ref.watch(archivosProvider);
 
     return userAsyncValue.when(
       data: (data) {
@@ -55,12 +44,12 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
           ),
-          body: Column(
+          body: const Column(
             children: [
-              const SizedBox(
+              SizedBox(
                 height: 20,
               ),
-              const Text(
+              Text(
                 'Selecciona lo que deseas hacer',
                 style: TextStyle(
                   color: AppTheme.mainColor,
@@ -68,41 +57,16 @@ class HomeScreen extends ConsumerWidget {
                   fontSize: 20,
                 ),
               ),
-              const _CustomButton(
+              _CustomButton(
                 icon: Icons.article_outlined,
                 text: 'Generar nuevo preoperacional',
                 navigateTo: NewPreoperacionalScree.name,
               ),
-              const _CustomButton(
+              _CustomButton(
                 icon: Icons.article_outlined,
                 text: 'Editar preoperacional ya existente',
                 navigateTo: ListPreoperacionalesScreen.name,
-              ),
-              const SizedBox(height: 20),
-              // Sección para listar archivos
-              Expanded(
-                child: archivosAsyncValue.when(
-                  data: (archivos) {
-                    if (archivos.isEmpty) {
-                      return const Center(child: Text('No se encontraron archivos.'));
-                    }
-                    return ListView.builder(
-                      itemCount: archivos.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          leading: const Icon(Icons.insert_drive_file),
-                          title: Text(archivos[index]),
-                          onTap: () {
-                            // Manejar la acción al tocar el archivo, como descargarlo o abrirlo.
-                          },
-                        );
-                      },
-                    );
-                  },
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (error, stack) => Center(child: Text('Error: $error')),
-                ),
-              ),
+              )
             ],
           ),
         );
