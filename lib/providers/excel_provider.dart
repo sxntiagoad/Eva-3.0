@@ -52,40 +52,34 @@ final carByIdProvider = FutureProvider.family<Car?, String>((ref, carId) async {
   return null;
 });
 
-// Provider para filtrar los archivos según el carPlate del carro seleccionado
-final relevantExcelFilesProvider =
-    FutureProvider.family<List<String>, String>((ref, carPlate) async {
-  final excelFiles = await ref.watch(excelFilesProvider.future);
-  print('Buscando archivos para el carPlate: $carPlate');
-  print('Total de archivos de Excel: ${excelFiles.length}');
+final userByIdProvider = FutureProvider.family<String, String>((ref, userId) async {
+  final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+  if (doc.exists && doc.data()!.containsKey('fullName')) {
+    return doc.data()!['fullName'] as String;
+  }
+  return 'Usuario Desconocido';
+});
 
-  List<String> relevantFiles = [];
+final relevantExcelFilesProvider = FutureProvider.family<List<Map<String, dynamic>>, String>((ref, carPlate) async {
+  final excelFiles = await ref.watch(excelFilesProvider.future);
+  List<Map<String, dynamic>> relevantFiles = [];
 
   for (String file in excelFiles) {
-    print('Analizando archivo: $file');
-    final preoperacionalUid = file;
-    final preoperacional =
-        await ref.read(preoperacionalByUidProvider(preoperacionalUid).future);
+    final preoperacionalUid = file.split('.')[0];
+    final preoperacional = await ref.read(preoperacionalByUidProvider(preoperacionalUid).future);
     if (preoperacional != null) {
-      print('Preoperacional encontrado para archivo: $file');
       final car = await ref.read(carByIdProvider(preoperacional.carId).future);
-      if (car != null) {
-        print('Carro encontrado para Preoperacional: ${car.carPlate}');
-        if (car.carPlate == carPlate) {
-          print('Coincidencia encontrada para carPlate: ${car.carPlate}');
-          relevantFiles.add(file);
-        } else {
-          print(
-              'No coincide carPlate. Esperado: $carPlate, Actual: ${car.carPlate}');
-        }
-      } else {
-        print(
-            'No se encontró carro para Preoperacional: ${preoperacional.carId}');
+      if (car != null && car.carPlate == carPlate) {
+        final userName = await ref.read(userByIdProvider(preoperacional.userId).future);
+        relevantFiles.add({
+          'fileName': file,
+          'userName': userName,
+          'date': preoperacional.fecha,
+          'isOpen' : preoperacional.isOpen,
+          'preoperacionalUid': preoperacionalUid,
+        });
       }
-    } else {
-      print('No se encontró Preoperacional para archivo: $file');
     }
   }
-  print('Archivos relevantes encontrados: ${relevantFiles.length}');
   return relevantFiles;
 });

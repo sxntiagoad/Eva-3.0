@@ -1,3 +1,4 @@
+import 'package:eva/presentation/admin/screens/gesture_cars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -30,11 +31,20 @@ class AdminPanelScreen extends ConsumerWidget {
             ),
           ),
           SizedBox(height: 40),  // Aumenta o disminuye esta altura para ajustar la posición vertical del botón
-          Center(  // Centra horizontalmente el botón
-            child: CustomButton(
-              icon: Icons.directions_car,
-              text: 'Preoperacionales',
-              navigateTo: AdminCars.name,
+          Center(  // Centra horizontalmente el contenido
+            child: Column(
+              children: [
+                CustomButton(
+                  icon: Icons.directions_car,
+                  text: 'Preoperacionales',
+                  navigateTo: AdminCars.name,
+                ),
+                CustomButton(
+                  icon: Icons.directions_car,
+                  text: 'Gestionar Carros',
+                  navigateTo: GestureCars.name,
+                ),
+              ],
             ),
           ),
         ],
