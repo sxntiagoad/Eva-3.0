@@ -1,4 +1,4 @@
-import 'package:eva/presentation/admin/screens/gesture_cars.dart';
+import 'package:eva/presentation/admin/screens/car_management_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -42,7 +42,7 @@ class AdminPanelScreen extends ConsumerWidget {
                 CustomButton(
                   icon: Icons.directions_car,
                   text: 'Gestionar Carros',
-                  navigateTo: GestureCars.name,
+                  navigateTo: CarManagementPage.name,
                 ),
               ],
             ),

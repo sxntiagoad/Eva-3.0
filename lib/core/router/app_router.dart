@@ -1,5 +1,5 @@
 import 'package:eva/presentation/admin/screens/admin_panel_screen.dart';
-import 'package:eva/presentation/admin/screens/gesture_cars.dart';
+import 'package:eva/presentation/admin/screens/car_management_page.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../models/preoperacional.dart';
@@ -80,9 +80,9 @@ final appRouter = GoRouter(
       builder: (context, state) => const AdminCars(),
     ),
     GoRoute(
-      path: '/${GestureCars.name}',
-      name: GestureCars.name,
-      builder: (context, state) => const GestureCars(),
+      path: '/${CarManagementPage.name}',
+      name: CarManagementPage.name,
+      builder: (context, state) => const CarManagementPage(),
     ),
 
   ],
