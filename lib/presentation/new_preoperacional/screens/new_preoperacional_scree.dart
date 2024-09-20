@@ -1,3 +1,4 @@
+import 'package:eva/presentation/new_preoperacional/widgets/kilometraje.dart';
 import 'package:eva/presentation/new_preoperacional/widgets/observaciones.dart';
 import 'package:eva/providers/is_open.dart';
 import 'package:flutter/material.dart';
@@ -55,11 +56,12 @@ class NewPreoperacionalScree extends ConsumerWidget {
             SizedBox(height: 10),
             TypeKidWidget(),
             SizedBox(height: 10),
+            KilometrajeWidget(),
+            SizedBox(height: 10),
             ListCategory(),
             SizedBox(height: 100),
             Divider(),
             ObservacionesWidget(),
-            SizedBox(height: 10),
           ],
         ),
       ),

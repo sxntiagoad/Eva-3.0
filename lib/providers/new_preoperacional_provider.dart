@@ -12,7 +12,9 @@ class PreoperacionalNotifier extends StateNotifier<Preoperacional> {
           inspecciones: formatInspecciones(),
           isOpen: false,
           typeKit: '',
-          observaciones: '', // Inicializar observaciones
+          observaciones: '',
+          kilometrajeInit: 0,
+          kilometrajeFinal: 0,
         ));
   
   void updateCarId(String newCarId) {
@@ -49,6 +51,14 @@ class PreoperacionalNotifier extends StateNotifier<Preoperacional> {
   // Nuevo método para actualizar observaciones
   void updateObservaciones(String newObservaciones) {
     state = state.copyWith(observaciones: newObservaciones);
+  }
+
+  void updateKilometrajeInit(int newKilometrajeInit) {
+    state = state.copyWith(kilometrajeInit: newKilometrajeInit);
+  }
+
+  void updateKilometrajeFinal(int newKilometrajeFinal) {
+    state = state.copyWith(kilometrajeFinal: newKilometrajeFinal);
   }
 
   void updateDayOfWeek(

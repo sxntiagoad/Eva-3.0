@@ -13,6 +13,8 @@ class Preoperacional {
   final String typeKit;
   final String userId;
   final String observaciones; // Nuevo campo de observaciones
+  final int kilometrajeInit;
+  final int kilometrajeFinal;
 
   Preoperacional({
     this.docId = '',
@@ -21,6 +23,8 @@ class Preoperacional {
     required this.inspecciones,
     required this.isOpen,
     required this.typeKit,
+    required this.kilometrajeInit,
+    this.kilometrajeFinal = 0,
     this.observaciones = '', // Inicialización del campo
   }) : userId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
@@ -32,6 +36,8 @@ class Preoperacional {
     String? typeKit,
     String? docId,
     String? observaciones, // Para modificar las observaciones
+    int? kilometrajeInit,
+    int? kilometrajeFinal,
   }) {
     return Preoperacional(
       carId: carId ?? this.carId,
@@ -40,7 +46,10 @@ class Preoperacional {
       isOpen: isOpen ?? this.isOpen,
       typeKit: typeKit ?? this.typeKit,
       docId: docId ?? this.docId,
-      observaciones: observaciones ?? this.observaciones, // Actualizar las observaciones
+      observaciones:
+          observaciones ?? this.observaciones, // Actualizar las observaciones
+      kilometrajeInit: kilometrajeInit ?? this.kilometrajeInit,
+      kilometrajeFinal: kilometrajeFinal ?? this.kilometrajeFinal,
     );
   }
 
@@ -63,6 +72,8 @@ class Preoperacional {
       'typeKit': typeKit,
       'userId': userId,
       'observaciones': observaciones, // Incluir en el mapa
+      'kilometrajeInit': kilometrajeInit,
+      'kilometrajeFinal': kilometrajeFinal,
     };
   }
 
@@ -81,6 +92,8 @@ class Preoperacional {
       isOpen: map['isOpen'] ?? false,
       typeKit: map['typeKit'] ?? '',
       observaciones: map['observaciones'] ?? '', // Cargar las observaciones
+      kilometrajeInit: map['kilometrajeInit']?.toInt() ?? 0,
+      kilometrajeFinal: map['kilometrajeFinal']?.toInt() ?? 0,
     );
   }
 
@@ -91,7 +104,7 @@ class Preoperacional {
 
   @override
   String toString() {
-    return 'Preoperacional(carId: $carId, fecha: $fecha, inspecciones: $inspecciones, isOpen: $isOpen, typeKit: $typeKit, userId: $userId, observaciones: $observaciones)';
+    return 'Preoperacional(carId: $carId, fecha: $fecha, inspecciones: $inspecciones, isOpen: $isOpen, typeKit: $typeKit, userId: $userId, observaciones: $observaciones, kilometrajeInit: $kilometrajeInit, kilometrajeFinal: $kilometrajeFinal)';
   }
 
   @override
@@ -105,7 +118,9 @@ class Preoperacional {
         other.isOpen == isOpen &&
         other.typeKit == typeKit &&
         other.userId == userId &&
-        other.observaciones == observaciones;
+        other.observaciones == observaciones &&
+        other.kilometrajeInit == kilometrajeInit &&
+        other.kilometrajeFinal == kilometrajeFinal;
   }
 
   @override
@@ -116,6 +131,8 @@ class Preoperacional {
         isOpen.hashCode ^
         typeKit.hashCode ^
         userId.hashCode ^
-        observaciones.hashCode;
+        observaciones.hashCode ^
+        kilometrajeInit.hashCode ^
+        kilometrajeFinal.hashCode;
   }
 }

@@ -13,6 +13,8 @@ class PreoperacionalDbNotifier extends StateNotifier<Preoperacional> {
           isOpen: false,
           typeKit: '',
           observaciones: '', // Inicializar observaciones
+          kilometrajeInit: 0,
+          kilometrajeFinal: 0,
         ));
 
   // Actualiza el carId
@@ -55,6 +57,16 @@ class PreoperacionalDbNotifier extends StateNotifier<Preoperacional> {
   // Actualiza las observaciones
   void updateObservaciones(String newObservaciones) {
     state = state.copyWith(observaciones: newObservaciones);
+  }
+
+  // Actualiza el kilometrajeInit
+  void updateKilometrajeInit(int newKilometrajeInit) {
+    state = state.copyWith(kilometrajeInit: newKilometrajeInit);
+  }
+
+  // Actualiza el kilometrajeFinal
+  void updateKilometrajeFinal(int newKilometrajeFinal) {
+    state = state.copyWith(kilometrajeFinal: newKilometrajeFinal);
   }
 
   // Actualiza el día de la semana
