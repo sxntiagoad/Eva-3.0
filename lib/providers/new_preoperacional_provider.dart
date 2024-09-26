@@ -8,15 +8,17 @@ class PreoperacionalNotifier extends StateNotifier<Preoperacional> {
   PreoperacionalNotifier()
       : super(Preoperacional(
           carId: '',
-          fecha: _getCurrentDateAsString(),
+          fecha: '',
           inspecciones: formatInspecciones(),
           isOpen: false,
           typeKit: '',
           observaciones: '',
           kilometrajeInit: 0,
           kilometrajeFinal: 0,
+          fechaInit: '',
+          fechaFinal: '',
         ));
-  
+
   void updateCarId(String newCarId) {
     state = state.copyWith(carId: newCarId);
   }
@@ -61,13 +63,20 @@ class PreoperacionalNotifier extends StateNotifier<Preoperacional> {
     state = state.copyWith(kilometrajeFinal: newKilometrajeFinal);
   }
 
+  void updateFechaInit(String newFechaInit) {
+    state = state.copyWith(fechaInit: newFechaInit);
+  }
+
+  void updateFechaFinal(String newFechaFinal) {
+    state = state.copyWith(fechaFinal: newFechaFinal);
+  }
+
   void updateDayOfWeek(
     String category,
     String subCategory,
     String day,
     bool? value,
   ) {
-
     final updatedInspecciones = Map<String, Map<String, Week>>.from(
       state.inspecciones,
     );
@@ -98,17 +107,32 @@ class PreoperacionalNotifier extends StateNotifier<Preoperacional> {
       }
     }
   }
+
+  void updateFechas(bool isOpen) {
+    final now = _getCurrentDateAsString();
+
+    if (state.fechaInit.isEmpty) {
+      state = state.copyWith(fechaInit: now);
+    }
+
+    if (!isOpen && state.fechaFinal.isEmpty) {
+      state = state.copyWith(fechaFinal: now);
+    }
+  }
 }
 
 final newPreoperacionalProvider =
-    StateNotifierProvider.autoDispose<PreoperacionalNotifier, Preoperacional>((ref) {
+    StateNotifierProvider.autoDispose<PreoperacionalNotifier, Preoperacional>(
+        (ref) {
   return PreoperacionalNotifier();
 });
 
+// Función auxiliar para obtener la fecha actual como string
 String _getCurrentDateAsString() {
-  final now = DateTime.now();
+  const bogotaTimeZone = Duration(hours: -5); // UTC-5 para Bogotá
+  final now = DateTime.now().toUtc().add(bogotaTimeZone);
   final formattedDate =
-      "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+      "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}";
 
   return formattedDate;
 }

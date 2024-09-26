@@ -47,7 +47,7 @@ class _ListTitlePreoperacional extends StatelessWidget {
           color: AppTheme.mainColor,
         ),
       ),
-      subtitle: Text(preoperacional.fecha),
+      subtitle: Text(preoperacional.fechaInit),
       trailing: preoperacional.isOpen
           ? const Icon(
               Icons.lock_open_outlined,

@@ -13,6 +13,8 @@ class Preoperacional {
   final String typeKit;
   final String userId;
   final String observaciones; // Nuevo campo de observaciones
+  final String fechaInit;
+  final String fechaFinal;
   final int kilometrajeInit;
   final int kilometrajeFinal;
 
@@ -24,6 +26,8 @@ class Preoperacional {
     required this.isOpen,
     required this.typeKit,
     required this.kilometrajeInit,
+    required this.fechaInit,
+    required this.fechaFinal,
     this.kilometrajeFinal = 0,
     this.observaciones = '', // Inicialización del campo
   }) : userId = FirebaseAuth.instance.currentUser?.uid ?? '';
@@ -38,6 +42,8 @@ class Preoperacional {
     String? observaciones, // Para modificar las observaciones
     int? kilometrajeInit,
     int? kilometrajeFinal,
+    String? fechaInit,
+    String? fechaFinal,
   }) {
     return Preoperacional(
       carId: carId ?? this.carId,
@@ -50,6 +56,8 @@ class Preoperacional {
           observaciones ?? this.observaciones, // Actualizar las observaciones
       kilometrajeInit: kilometrajeInit ?? this.kilometrajeInit,
       kilometrajeFinal: kilometrajeFinal ?? this.kilometrajeFinal,
+      fechaInit: fechaInit ?? this.fechaInit,
+      fechaFinal: fechaFinal ?? this.fechaFinal,
     );
   }
 
@@ -74,6 +82,8 @@ class Preoperacional {
       'observaciones': observaciones, // Incluir en el mapa
       'kilometrajeInit': kilometrajeInit,
       'kilometrajeFinal': kilometrajeFinal,
+      'fechaInit': fechaInit,
+      'fechaFinal': fechaFinal,
     };
   }
 
@@ -94,6 +104,8 @@ class Preoperacional {
       observaciones: map['observaciones'] ?? '', // Cargar las observaciones
       kilometrajeInit: map['kilometrajeInit']?.toInt() ?? 0,
       kilometrajeFinal: map['kilometrajeFinal']?.toInt() ?? 0,
+      fechaInit: map['fechaInit'] ?? '',
+      fechaFinal: map['fechaFinal'] ?? '',
     );
   }
 
@@ -120,8 +132,11 @@ class Preoperacional {
         other.userId == userId &&
         other.observaciones == observaciones &&
         other.kilometrajeInit == kilometrajeInit &&
-        other.kilometrajeFinal == kilometrajeFinal;
+        other.kilometrajeFinal == kilometrajeFinal &&
+        other.fechaInit == fechaInit &&
+        other.fechaFinal == fechaFinal;
   }
+
 
   @override
   int get hashCode {
@@ -133,6 +148,10 @@ class Preoperacional {
         userId.hashCode ^
         observaciones.hashCode ^
         kilometrajeInit.hashCode ^
-        kilometrajeFinal.hashCode;
+        kilometrajeFinal.hashCode ^
+        fechaInit.hashCode ^
+        fechaFinal.hashCode;
   }
 }
+
+

@@ -36,8 +36,10 @@ class SaveWidgetState extends ConsumerState<UpdatePreoperacional> {
               });
 
               try {
+                ref.read(preoperacionalDbProvider.notifier).updateFechas(isOpen);
                 await updatePreoperacional(
                   ref.read(preoperacionalDbProvider),
+
                   ref,
                 );
                 await dataJson(

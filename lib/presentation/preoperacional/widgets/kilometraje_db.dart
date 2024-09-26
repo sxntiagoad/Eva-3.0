@@ -18,7 +18,7 @@ class KilometrajeDbWidget extends ConsumerWidget {
               .read(preoperacionalDbProvider.notifier)
               .updateKilometrajeInit(value),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 55),
         _buildKilometrajeField(
           context,
           ref,

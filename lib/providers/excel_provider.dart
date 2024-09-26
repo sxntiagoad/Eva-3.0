@@ -16,10 +16,8 @@ final excelFilesProvider = FutureProvider<List<String>>((ref) async {
     final ListResult result = await storageRef.listAll();
     final List<String> fileNames =
         result.items.map((item) => item.name).toList();
-    print('Archivos obtenidos: $fileNames');
     return fileNames;
   } catch (e) {
-    print('Error en excelFilesProvider: $e');
     throw Exception("Error al obtener archivos de Storage: $e");
   }
 });
@@ -33,10 +31,8 @@ final preoperacionalByUidProvider =
       .doc(uid)
       .get();
   if (doc.exists) {
-    print('Preoperacional encontrado para UID: $uid');
     return Preoperacional.fromMap(doc.data()!).copyWith(docId: doc.id);
   }
-  print('No se encontró Preoperacional para UID: $uid');
   return null;
 });
 
@@ -45,10 +41,8 @@ final carByIdProvider = FutureProvider.family<Car?, String>((ref, carId) async {
   final doc =
       await FirebaseFirestore.instance.collection('cars').doc(carId).get();
   if (doc.exists) {
-    print('Carro encontrado para ID: $carId');
     return Car.fromMap(doc.data()!);
   }
-  print('No se encontró Carro para ID: $carId');
   return null;
 });
 

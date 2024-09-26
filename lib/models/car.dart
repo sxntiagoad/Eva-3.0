@@ -3,15 +3,16 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Car {
-  final Timestamp ?extracto;
-  final Timestamp ?soat;
-  final Timestamp ?tarjetaOp;
-  final Timestamp ?tecnicoMec;
-
+  final Timestamp? extracto;
+  final Timestamp? soat;
+  final Timestamp? tarjetaOp;
+  final Timestamp? tecnicoMec;
   final String brand;
   final String carPlate;
   final String carType;
   final String model;
+  final Timestamp? ultCambioAceite;
+  final Timestamp? proxCambioAceite;
   Car({
     required this.extracto,
     required this.soat,
@@ -21,6 +22,8 @@ class Car {
     required this.carPlate,
     required this.carType,
     required this.model,
+    this.ultCambioAceite,
+    this.proxCambioAceite
   });
 
   Car copyWith({
@@ -32,6 +35,8 @@ class Car {
     String? carPlate,
     String? carType,
     String? model,
+    Timestamp? ultCambioAceite,
+    Timestamp? proxCambioAceite,
   }) {
     return Car(
       extracto: extracto ?? this.extracto,
@@ -42,6 +47,8 @@ class Car {
       carPlate: carPlate ?? this.carPlate,
       carType: carType ?? this.carType,
       model: model ?? this.model,
+      ultCambioAceite: ultCambioAceite ?? this.ultCambioAceite,
+      proxCambioAceite: proxCambioAceite ?? this.proxCambioAceite,
     );
   }
 
@@ -51,11 +58,12 @@ class Car {
       'F.V_soat': soat,
       'F.V_tarjetaOp': tarjetaOp,
       'F.V_tecnicomec': tecnicoMec,
-
       'brand': brand,
       'carPlate': carPlate,
       'carType': carType,
       'model': model,
+      'ultCambioAceite': ultCambioAceite,
+      'proxCambioAceite': proxCambioAceite,
     };
   }
 
@@ -65,11 +73,12 @@ class Car {
       soat: map['F.V_soat'],
       tarjetaOp: map['F.V_tarjetaOp'],
       tecnicoMec: map['F.V_tecnicomec'],
-
       brand: map['brand'] ?? '',
       carPlate: map['carPlate'] ?? '',
       carType: map['carType'] ?? '',
       model: map['model'] ?? '',
+      ultCambioAceite: map['ultCambioAceite'],
+      proxCambioAceite: map['proxCambioAceite'],
     );
   }
 
@@ -79,33 +88,33 @@ class Car {
 
   @override
   String toString() {
-    return 'Car(extracto: $extracto, soat: $soat, tarjetaOp: $tarjetaOp, tecnicoMec: $tecnicoMec, brand: $brand, carPlate: $carPlate, carType: $carType, model: $model)';
+    return 'Car(extracto: $extracto, soat: $soat, tarjetaOp: $tarjetaOp, tecnicoMec: $tecnicoMec, brand: $brand, carPlate: $carPlate, carType: $carType, model: $model, ultCambioAceite: $ultCambioAceite, proxCambioAceite: $proxCambioAceite)';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-  
+
     return other is Car &&
-      other.extracto == extracto &&
-      other.soat == soat &&
-      other.tarjetaOp == tarjetaOp &&
-      other.tecnicoMec == tecnicoMec &&
-      other.brand == brand &&
-      other.carPlate == carPlate &&
-      other.carType == carType &&
-      other.model == model;
+        other.extracto == extracto &&
+        other.soat == soat &&
+        other.tarjetaOp == tarjetaOp &&
+        other.tecnicoMec == tecnicoMec &&
+        other.brand == brand &&
+        other.carPlate == carPlate &&
+        other.carType == carType &&
+        other.model == model;
   }
 
   @override
   int get hashCode {
     return extracto.hashCode ^
-      soat.hashCode ^
-      tarjetaOp.hashCode ^
-      tecnicoMec.hashCode ^
-      brand.hashCode ^
-      carPlate.hashCode ^
-      carType.hashCode ^
-      model.hashCode;
+        soat.hashCode ^
+        tarjetaOp.hashCode ^
+        tecnicoMec.hashCode ^
+        brand.hashCode ^
+        carPlate.hashCode ^
+        carType.hashCode ^
+        model.hashCode;
   }
 }

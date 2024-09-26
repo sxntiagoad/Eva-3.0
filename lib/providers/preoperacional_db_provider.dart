@@ -15,6 +15,8 @@ class PreoperacionalDbNotifier extends StateNotifier<Preoperacional> {
           observaciones: '', // Inicializar observaciones
           kilometrajeInit: 0,
           kilometrajeFinal: 0,
+          fechaInit: '',
+          fechaFinal: '',
         ));
 
   // Actualiza el carId
@@ -69,7 +71,30 @@ class PreoperacionalDbNotifier extends StateNotifier<Preoperacional> {
     state = state.copyWith(kilometrajeFinal: newKilometrajeFinal);
   }
 
+  // Actualiza la fechaInit
+  void updateFechaInit(String newFechaInit) {
+    state = state.copyWith(fechaInit: newFechaInit);
+  }
+
+  // Actualiza la fechaFinal
+  void updateFechaFinal(String newFechaFinal) {
+    state = state.copyWith(fechaFinal: newFechaFinal);
+  }
+
+  void updateFechas(bool isOpen) {
+    final now = _getCurrentDateAsString();
+
+    if (state.fechaInit.isEmpty) {
+      state = state.copyWith(fechaInit: now);
+    }
+
+    if (!isOpen && state.fechaFinal.isEmpty) {
+      state = state.copyWith(fechaFinal: now);
+    }
+  }
+
   // Actualiza el día de la semana
+
   void updateDayOfWeek(
     String category,
     String subCategory,
@@ -123,9 +148,10 @@ final preoperacionalDbProvider =
 
 // Función auxiliar para obtener la fecha actual como string
 String _getCurrentDateAsString() {
-  final now = DateTime.now();
+  const bogotaTimeZone = Duration(hours: -5); // UTC-5 para Bogotá
+  final now = DateTime.now().toUtc().add(bogotaTimeZone);
   final formattedDate =
-      "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+      "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}";
 
   return formattedDate;
 }

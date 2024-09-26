@@ -18,7 +18,7 @@ class KilometrajeWidget extends ConsumerWidget {
               .read(newPreoperacionalProvider.notifier)
               .updateKilometrajeInit(value),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 55),
         _buildKilometrajeField(
           context,
           ref,

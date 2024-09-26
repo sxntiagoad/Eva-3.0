@@ -36,6 +36,7 @@ class SaveWidgetState extends ConsumerState<SaveWidget> {
               });
 
               try {
+                ref.read(newPreoperacionalProvider.notifier).updateFechas(isOpen);
                 final String idDoc = await addPreoperacional(
                       ref.read(newPreoperacionalProvider),
                       ref,
