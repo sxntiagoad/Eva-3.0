@@ -19,8 +19,8 @@ class _SignatureWidgetState extends ConsumerState<SignatureWidget> {
   void initState() {
     super.initState();
     _signatureController = SignatureController(
-      penStrokeWidth: 5,
-      penColor: Colors.black,
+      penStrokeWidth: 3,
+      penColor: Colors.black87,
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(signatureProvider.notifier).setSignature(widget.initialSignatureUrl);
@@ -45,6 +45,7 @@ class _SignatureWidgetState extends ConsumerState<SignatureWidget> {
         if (isEditing)
           Signature(
             controller: _signatureController,
+            width: 400,
             height: 200,
             backgroundColor: Colors.grey[200]!,
           ),

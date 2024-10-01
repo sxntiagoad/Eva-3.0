@@ -118,7 +118,7 @@ Future<String> getSESCOTURImageUrl() async {
 
 Future<String> getManagerSignatureUrl() async {
   try {
-    return await FirebaseStorage.instance.ref('FIRMA_ROGER.jpeg').getDownloadURL();
+    return await FirebaseStorage.instance.ref('FIRMA_ROGER.png').getDownloadURL();
   } catch (e) {
     // ignore: avoid_print
     print('Error al obtener la firma del encargado: $e');

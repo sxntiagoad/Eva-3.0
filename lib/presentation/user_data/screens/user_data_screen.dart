@@ -1,89 +1,135 @@
-import 'package:eva/core/theme/app_theme.dart';
-import 'package:eva/presentation/user_data/widgets/signature.dart';
-import 'package:eva/presentation/user_data/widgets/user_photo.dart';
+import 'package:eva/providers/edit_user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import '../../../core/theme/app_theme.dart';
+import '../widgets/signature.dart';
+import '../widgets/user_photo.dart';
 
-import '../../../providers/current_user_provider.dart';
-
-class UserDataScreen extends ConsumerWidget {
+class UserDataScreen extends ConsumerStatefulWidget {
   static const name = 'user-data-screen';
   const UserDataScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final userAsyncValue = ref.watch(currentUserProvider);
-    final currentUser = FirebaseAuth.instance.currentUser;
+  _UserDataScreenState createState() => _UserDataScreenState();
+}
 
-    return userAsyncValue.when(
-      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (error, stack) => Scaffold(body: Center(child: Text('Error: $error'))),
-      data: (data) {
-        if (currentUser == null) {
-          return const Scaffold(body: Center(child: Text('No hay usuario autenticado')));
-        }
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Datos personales'),
-          ),
-          body: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const UserPhoto(),
-                  const SizedBox(height: 40),
-                  TextField(
-                    controller: TextEditingController(text: data.fullName),
-                    decoration: const InputDecoration(
-                      labelText: 'Nombre completo',
-                    ),
-                    readOnly: true,
-                  ),
-                  const SizedBox(height: 20),
-                  TextField(
-                    controller: TextEditingController(text: data.email),
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                    ),
-                    readOnly: true,
-                  ),
-                  const SizedBox(height: 20),
-                  TextField(
-                    controller: TextEditingController(text: data.role),
-                    decoration: const InputDecoration(
-                      labelText: 'Cargo',
-                    ),
-                    readOnly: true,
-                  ),
-                  const SizedBox(height: 20),
-                  SignatureWidget(key: ValueKey(currentUser.uid), initialSignatureUrl: data.signature),
-                ],
+class _UserDataScreenState extends ConsumerState<UserDataScreen> {
+  @override
+  Widget build(BuildContext context) {
+    final userDataNotifier = ref.watch(userDataProvider.notifier);
+    final userData = ref.watch(userDataProvider);
+    final isEditing = userDataNotifier.isEditing;
+
+    if (userData == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Datos personales'),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const UserPhoto(),
+              const SizedBox(height: 40),
+              _buildTextField('Nombre completo', userData.fullName, isEditing,
+                  (value) => userDataNotifier.updateField('fullName', value)),
+              const SizedBox(height: 20),
+              _buildTextField('Email', userData.email, isEditing,
+                  (value) => userDataNotifier.updateField('email', value)),
+              const SizedBox(height: 20),
+              _buildReadOnlyField('Cargo', userData.role),
+              const SizedBox(height: 20),
+              SignatureWidget(
+                key: ValueKey(userData.email),
+                initialSignatureUrl: userData.signature,
               ),
+            ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: isEditing ? Colors.blue[900] : AppTheme.mainColor,
+          ),
+          onPressed: () {
+            if (isEditing) {
+              userDataNotifier.saveChanges();
+            } else {
+              userDataNotifier.toggleEditing();
+            }
+          },
+          child: Text(
+            isEditing ? 'Guardar' : 'Modificar',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          bottomNavigationBar: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.mainColor),
-              onPressed: () {
-                // Lógica para modificar otros datos
-              },
-              child: const Text(
-                'Modificar',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        );
-      },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(String label, String initialValue, bool isEditing, Function(String) onChanged) {
+    return TextFormField(
+      initialValue: initialValue,
+      decoration: InputDecoration(
+        labelText: label,
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        labelStyle: TextStyle(
+          color: isEditing ? Colors.blue : Colors.grey,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.blue, width: 2),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        filled: true,
+        fillColor: isEditing ? Colors.white : Colors.grey.shade100,
+      ),
+      style: TextStyle(
+        color: isEditing ? Colors.black : Colors.grey.shade700,
+      ),
+      enabled: isEditing,
+      onChanged: onChanged,
+    );
+  }
+
+  Widget _buildReadOnlyField(String label, String value) {
+    return TextFormField(
+      initialValue: value,
+      decoration: InputDecoration(
+        labelText: label,
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        labelStyle: TextStyle(color: Colors.grey),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        filled: true,
+        fillColor: Colors.grey.shade100,
+      ),
+      style: TextStyle(color: Colors.grey.shade700),
+      enabled: false,
     );
   }
 }
