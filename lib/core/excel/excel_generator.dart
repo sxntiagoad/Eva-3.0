@@ -45,6 +45,7 @@ Future<void> dataJson(
   final userValue = user.value;
 
   final logoUrl = await getSESCOTURImageUrl();
+  final firmaEncargadoUrl = await getManagerSignatureUrl();
   String firmaUrl = '';
   if (userValue != null) {
     final uid = FirebaseAuth.instance.currentUser?.uid;
@@ -54,7 +55,7 @@ Future<void> dataJson(
   }
   data['IMAGENES'] = {
     'FIRMA_USER': firmaUrl,
-    'FIRMA_ENCARGADO': user.value?.fullName ?? '',
+    'FIRMA_ENCARGADO': firmaEncargadoUrl,
     'LOGO': logoUrl,
   };
 
@@ -112,6 +113,16 @@ Future<String> getSESCOTURImageUrl() async {
     // ignore: avoid_print
     print('Error al obtener la URL de SESCOTUR.png: $e');
     return ''; // Retorna una cadena vacía en caso de error
+  }
+}
+
+Future<String> getManagerSignatureUrl() async {
+  try {
+    return await FirebaseStorage.instance.ref('FIRMA_ROGER.jpeg').getDownloadURL();
+  } catch (e) {
+    // ignore: avoid_print
+    print('Error al obtener la firma del encargado: $e');
+    return '';
   }
 }
 
