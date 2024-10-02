@@ -1,5 +1,6 @@
 import 'package:eva/models/format_inspecciones.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Añade esta importación
 
 import '../models/preoperacional.dart';
 import '../models/week.dart';
@@ -12,11 +13,12 @@ class PreoperacionalDbNotifier extends StateNotifier<Preoperacional> {
           inspecciones: formatInspecciones(),
           isOpen: false,
           typeKit: '',
-          observaciones: '', // Inicializar observaciones
+          observaciones: '',
           kilometrajeInit: 0,
           kilometrajeFinal: 0,
           fechaInit: '',
           fechaFinal: '',
+          userId: FirebaseAuth.instance.currentUser?.uid ?? '', // Modificado aquí
         ));
 
   // Actualiza el carId
@@ -81,6 +83,7 @@ class PreoperacionalDbNotifier extends StateNotifier<Preoperacional> {
     state = state.copyWith(fechaFinal: newFechaFinal);
   }
 
+
   void updateFechas(bool isOpen) {
     final now = _getCurrentDateAsString();
 
@@ -136,6 +139,7 @@ class PreoperacionalDbNotifier extends StateNotifier<Preoperacional> {
   void replacePreoperacional(Preoperacional newPreoperacional) {
     state = newPreoperacional.copyWith(
       observaciones: newPreoperacional.observaciones, // Asegurar que se copien las observaciones
+      userId: state.userId, // Mantén el userId original
     );
   }
 }

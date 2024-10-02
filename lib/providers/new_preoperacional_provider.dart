@@ -1,5 +1,6 @@
 import 'package:eva/models/format_inspecciones.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Añade esta importación
 
 import '../models/preoperacional.dart';
 import '../models/week.dart';
@@ -17,6 +18,7 @@ class PreoperacionalNotifier extends StateNotifier<Preoperacional> {
           kilometrajeFinal: 0,
           fechaInit: '',
           fechaFinal: '',
+          userId: FirebaseAuth.instance.currentUser?.uid ?? '', // Modificado aquí
         ));
 
   void updateCarId(String newCarId) {
@@ -119,6 +121,11 @@ class PreoperacionalNotifier extends StateNotifier<Preoperacional> {
       state = state.copyWith(fechaFinal: now);
     }
   }
+
+  // Elimina este método, ya que no lo necesitaremos
+  // void updateUserId(String newUserId) {
+  //   state = state.copyWith(userId: newUserId);
+  // }
 }
 
 final newPreoperacionalProvider =

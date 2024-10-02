@@ -88,19 +88,19 @@ class _UserDataScreenState extends ConsumerState<UserDataScreen> {
           color: isEditing ? Colors.blue : Colors.grey,
         ),
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: const BorderSide(color: Colors.blue),
           borderRadius: BorderRadius.circular(8),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue, width: 2),
+          borderSide: const BorderSide(color: Colors.blue, width: 2),
           borderRadius: BorderRadius.circular(8),
         ),
         disabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: const BorderSide(color: Colors.blue),
           borderRadius: BorderRadius.circular(8),
         ),
         filled: true,
-        fillColor: isEditing ? Colors.white : Colors.grey.shade100,
+        fillColor: isEditing ? Colors.white : Colors.white,
       ),
       style: TextStyle(
         color: isEditing ? Colors.black : Colors.grey.shade700,
@@ -116,13 +116,13 @@ class _UserDataScreenState extends ConsumerState<UserDataScreen> {
       decoration: InputDecoration(
         labelText: label,
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        labelStyle: TextStyle(color: Colors.grey),
+        labelStyle: const TextStyle(color: Colors.white),
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: const BorderSide(color: Colors.blue),
           borderRadius: BorderRadius.circular(8),
         ),
         disabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: const BorderSide(color: Colors.blue),
           borderRadius: BorderRadius.circular(8),
         ),
         filled: true,

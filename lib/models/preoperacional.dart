@@ -28,9 +28,10 @@ class Preoperacional {
     required this.kilometrajeInit,
     required this.fechaInit,
     required this.fechaFinal,
+    required this.userId,
     this.kilometrajeFinal = 0,
     this.observaciones = '', // Inicialización del campo
-  }) : userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+  });
 
   Preoperacional copyWith({
     String? carId,
@@ -44,6 +45,7 @@ class Preoperacional {
     int? kilometrajeFinal,
     String? fechaInit,
     String? fechaFinal,
+    String? userId,
   }) {
     return Preoperacional(
       carId: carId ?? this.carId,
@@ -58,6 +60,7 @@ class Preoperacional {
       kilometrajeFinal: kilometrajeFinal ?? this.kilometrajeFinal,
       fechaInit: fechaInit ?? this.fechaInit,
       fechaFinal: fechaFinal ?? this.fechaFinal,
+      userId: userId ?? this.userId,
     );
   }
 
@@ -106,6 +109,7 @@ class Preoperacional {
       kilometrajeFinal: map['kilometrajeFinal']?.toInt() ?? 0,
       fechaInit: map['fechaInit'] ?? '',
       fechaFinal: map['fechaFinal'] ?? '',
+      userId: map['userId'] ?? '',
     );
   }
 
@@ -137,7 +141,6 @@ class Preoperacional {
         other.fechaFinal == fechaFinal;
   }
 
-
   @override
   int get hashCode {
     return carId.hashCode ^
@@ -153,5 +156,3 @@ class Preoperacional {
         fechaFinal.hashCode;
   }
 }
-
-
