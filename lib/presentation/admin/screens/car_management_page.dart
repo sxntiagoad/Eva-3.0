@@ -13,11 +13,25 @@ class CarManagementPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final selectedCars = ref.watch(selectedCarsProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Gestión de Carros'),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        actions: [
+          if (selectedCars.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () async {
+                await deleteSelectedCars(ref);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Carros eliminados')),
+                );
+              },
+            ),
+        ],
       ),
       body: Column(
         children: [
@@ -52,9 +66,10 @@ class CarManagementPage extends ConsumerWidget {
                   padding: const EdgeInsets.all(16),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 4,
-                    childAspectRatio: 1,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
+                    childAspectRatio:
+                        2.5, // Ajustado para hacer los containers más anchos
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
                   ),
                   itemCount: cars.length,
                   itemBuilder: (context, index) {
@@ -62,74 +77,125 @@ class CarManagementPage extends ConsumerWidget {
                     final carId = carDoc.id;
                     final carData = carDoc.data() as Map<String, dynamic>;
                     final car = Car.fromMap(carData);
+                    final isSelected = selectedCars.contains(carId);
 
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EditCarPage(carId: carId),
+                    return Stack(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EditCarPage(carId: carId),
+                              ),
+                            ).then((_) {
+                              ref.invalidate(mapCarsProvider);
+                            });
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: AppTheme.mainColor.withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.3),
+                                  spreadRadius: 2,
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          car.brand,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          car.model,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          car.carPlate,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          car.carType,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                        ).then((_) {
-                          ref.invalidate(mapCarsProvider);
-                        });
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: AppTheme.mainColor.withOpacity(0.8),
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.3),
-                              spreadRadius: 1,
-                              blurRadius: 2,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              car.brand,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
+                        Positioned(
+                          top: 12,
+                          left: 12,
+                          child: GestureDetector(
+                            onTap: () {
+                              ref
+                                  .read(selectedCarsProvider.notifier)
+                                  .toggleSelection(carId);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                color: isSelected ? Colors.blue : Colors.white,
+                                shape: BoxShape.circle,
+                                border:
+                                    Border.all(color: Colors.blue, width: 2),
                               ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              car.model,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
+                              child: Icon(
+                                isSelected
+                                    ? Icons.check
+                                    : Icons.circle_outlined,
+                                size: 20,
+                                color: isSelected ? Colors.white : Colors.blue,
                               ),
-                              textAlign: TextAlign.center,
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              car.carPlate,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              car.carType,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
+                      ],
                     );
                   },
                 );

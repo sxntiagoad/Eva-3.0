@@ -15,6 +15,7 @@ class CarPos extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final relevantExcelFiles = ref.watch(relevantExcelFilesProvider(car.carPlate));
+    final selectedFiles = ref.watch(selectedFilesProvider);
 
     void refreshData() {
       ref.invalidate(excelFilesProvider);
@@ -32,6 +33,18 @@ class CarPos extends ConsumerWidget {
             icon: const Icon(Icons.refresh),
             onPressed: refreshData,
           ),
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: selectedFiles.isNotEmpty
+                ? () async {
+                    await deleteSelectedFiles(ref);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Archivos eliminados')),
+                    );
+                    refreshData();
+                  }
+                : null,
+          ),
         ],
       ),
       body: RefreshIndicator(
@@ -47,15 +60,18 @@ class CarPos extends ConsumerWidget {
               itemCount: relevantFiles.length,
               itemBuilder: (context, index) {
                 final fileInfo = relevantFiles[index];
+                final isSelected = selectedFiles.contains(fileInfo['fileName']);
                 return ListTile(
-                  leading: Icon(
-                    Icons.table_chart,
-                    color: fileInfo['isOpen'] ? Colors.green : Colors.red,
+                  leading: Checkbox(
+                    value: isSelected,
+                    onChanged: (bool? value) {
+                      ref.read(selectedFilesProvider.notifier).toggleSelection(fileInfo['fileName']);
+                    },
                   ),
                   title: Text(fileInfo['userName']),
                   subtitle: Row(
                     children: [
-                      Text(_formatDate(fileInfo['date'])),
+                      Text(_formatDate(fileInfo['finalDate'], fileInfo['initDate'])),
                       const SizedBox(width: 10),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -94,15 +110,15 @@ class CarPos extends ConsumerWidget {
     );
   }
 
-  String _formatDate(String dateString) {
-    // Asumimos que dateString está en formato "yyyy-MM-dd"
+  String _formatDate(String finalDate, String initDate) {
     try {
-      final date = DateTime.parse(dateString);
-      final dateFormat = DateFormat('dd MMM yyyy');
+      final dateToUse = finalDate.isNotEmpty ? finalDate : initDate;
+      final date = DateTime.parse(dateToUse);
+      final dateFormat = DateFormat('dd MMM yyyy HH:mm:ss');
       return dateFormat.format(date);
     } catch (e) {
       print('Error al formatear la fecha: $e');
-      return dateString; // Devolvemos la fecha original si hay un error
+      return finalDate.isNotEmpty ? finalDate : initDate;
     }
   }
 

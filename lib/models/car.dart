@@ -13,6 +13,9 @@ class Car {
   final String model;
   final Timestamp? ultCambioAceite;
   final Timestamp? proxCambioAceite;
+  final bool? isFirstTime;
+  final Map<String, dynamic>? F;
+
   Car({
     required this.extracto,
     required this.soat,
@@ -22,8 +25,10 @@ class Car {
     required this.carPlate,
     required this.carType,
     required this.model,
+    this.isFirstTime = true,
     this.ultCambioAceite,
-    this.proxCambioAceite
+    this.proxCambioAceite,
+    this.F,
   });
 
   Car copyWith({
@@ -37,6 +42,8 @@ class Car {
     String? model,
     Timestamp? ultCambioAceite,
     Timestamp? proxCambioAceite,
+    bool? isFirstTime,
+    Map<String, dynamic>? F,
   }) {
     return Car(
       extracto: extracto ?? this.extracto,
@@ -49,11 +56,13 @@ class Car {
       model: model ?? this.model,
       ultCambioAceite: ultCambioAceite ?? this.ultCambioAceite,
       proxCambioAceite: proxCambioAceite ?? this.proxCambioAceite,
+      isFirstTime: isFirstTime ?? this.isFirstTime,
+      F: F ?? this.F,
     );
   }
 
   Map<String, dynamic> toMap() {
-    return {
+    final map = {
       'F.V_extracto': extracto,
       'F.V_soat': soat,
       'F.V_tarjetaOp': tarjetaOp,
@@ -64,7 +73,12 @@ class Car {
       'model': model,
       'ultCambioAceite': ultCambioAceite,
       'proxCambioAceite': proxCambioAceite,
+      'isFirstTime': isFirstTime,
     };
+    if (F != null) {
+      map['F'] = F;
+    }
+    return map;
   }
 
   factory Car.fromMap(Map<String, dynamic> map) {
@@ -79,6 +93,8 @@ class Car {
       model: map['model'] ?? '',
       ultCambioAceite: map['ultCambioAceite'],
       proxCambioAceite: map['proxCambioAceite'],
+      isFirstTime: map['isFirstTime'],
+      F: map['F'] as Map<String, dynamic>?,
     );
   }
 
@@ -88,7 +104,7 @@ class Car {
 
   @override
   String toString() {
-    return 'Car(extracto: $extracto, soat: $soat, tarjetaOp: $tarjetaOp, tecnicoMec: $tecnicoMec, brand: $brand, carPlate: $carPlate, carType: $carType, model: $model, ultCambioAceite: $ultCambioAceite, proxCambioAceite: $proxCambioAceite)';
+    return 'Car(extracto: $extracto, soat: $soat, tarjetaOp: $tarjetaOp, tecnicoMec: $tecnicoMec, brand: $brand, carPlate: $carPlate, carType: $carType, model: $model, ultCambioAceite: $ultCambioAceite, proxCambioAceite: $proxCambioAceite, isFirstTime: $isFirstTime, f: $F)';
   }
 
   @override
