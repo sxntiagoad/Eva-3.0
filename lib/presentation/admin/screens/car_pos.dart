@@ -135,7 +135,7 @@ class CarPos extends ConsumerWidget {
 
   Future<void> _downloadFile(FirebaseFile file, BuildContext context) async {
     try {
-      await FirebaseApi.downloadFileWeb(file.ref);
+      await FirebaseApi.downloadFile(file.ref);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Archivo descargado: ${file.name}')),
       );

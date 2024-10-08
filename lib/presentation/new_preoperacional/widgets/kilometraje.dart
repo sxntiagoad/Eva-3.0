@@ -18,7 +18,7 @@ class KilometrajeWidget extends ConsumerWidget {
               .read(newPreoperacionalProvider.notifier)
               .updateKilometrajeInit(value),
         ),
-        const SizedBox(width: 55),
+        const SizedBox(width: 2),
         _buildKilometrajeField(
           context,
           ref,
@@ -38,7 +38,7 @@ class KilometrajeWidget extends ConsumerWidget {
     Function(int) onChanged,
   ) {
     return SizedBox(
-      width: 200, // Ancho fijo para ambos campos
+      width: 140, // Ancho fijo para ambos campos
       child: TextField(
         keyboardType: TextInputType.number,
         decoration: InputDecoration(

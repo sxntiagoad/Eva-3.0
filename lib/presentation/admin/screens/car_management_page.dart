@@ -49,8 +49,8 @@ class CarManagementPage extends ConsumerWidget {
           ),
           const SizedBox(height: 20),
           Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance.collection('cars').snapshots(),
+            child: FutureBuilder<QuerySnapshot>(
+              future: FirebaseFirestore.instance.collection('cars').get(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());

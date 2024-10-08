@@ -128,7 +128,6 @@ class _EditCarPageState extends ConsumerState<EditCarPage> {
 
   void _submitForm(BuildContext context, WidgetRef ref, String carId) {
     if (_isDisposed) return;
-    final carNotifier = ref.read(selectedCarProvider.notifier);
     final car = ref.read(selectedCarProvider);
     if (car != null) {
       FirebaseFirestore.instance

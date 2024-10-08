@@ -18,7 +18,7 @@ class KilometrajeDbWidget extends ConsumerWidget {
               .read(preoperacionalDbProvider.notifier)
               .updateKilometrajeInit(value),
         ),
-        const SizedBox(width: 55),
+        const SizedBox(width: 3),
         _buildKilometrajeField(
           context,
           ref,
@@ -43,7 +43,7 @@ class KilometrajeDbWidget extends ConsumerWidget {
         : preoperacional.kilometrajeFinal.toString();
 
     return SizedBox(
-      width: 200, // Ancho fijo para ambos campos
+      width: 150, // Ancho fijo para ambos campos
       child: TextField(
         controller: TextEditingController(text: initialValue),
         keyboardType: TextInputType.number,

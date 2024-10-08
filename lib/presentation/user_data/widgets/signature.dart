@@ -41,7 +41,17 @@ class _SignatureWidgetState extends ConsumerState<SignatureWidget> {
     return Column(
       children: [
         if (!isEditing && signatureUrl != null)
-          Image.network(signatureUrl),
+          Image.network(
+            signatureUrl,
+            key: ValueKey(signatureUrl), // Añadimos una key única
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return const Center(child: CircularProgressIndicator());
+            },
+            errorBuilder: (context, error, stackTrace) {
+              return const Text('Error al cargar la imagen');
+            },
+          ),
         if (isEditing)
           Signature(
             controller: _signatureController,
@@ -56,6 +66,7 @@ class _SignatureWidgetState extends ConsumerState<SignatureWidget> {
               if (signatureImage != null) {
                 await ref.read(signatureProvider.notifier).saveSignature(signatureImage);
                 ref.read(isEditingProvider.notifier).state = false;
+                _signatureController.clear(); // Limpiamos el controlador después de guardar
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('La firma está vacía o no es válida')),
