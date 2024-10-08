@@ -89,10 +89,10 @@ class _EditCarPageState extends ConsumerState<EditCarPage> {
             onChanged: (value) => carNotifier.updateField('carType', value),
           ),
           const SizedBox(height: 20),
-          _buildDateButton('F.V_extracto', 'Extracto', carAsyncValue.extracto),
-          _buildDateButton('F.V_soat', 'SOAT', carAsyncValue.soat),
-          _buildDateButton('F.V_tarjetaOp', 'Tarjeta de Operación', carAsyncValue.tarjetaOp),
-          _buildDateButton('F.V_tecnicomec', 'Técnico Mecánica', carAsyncValue.tecnicoMec),
+          _buildDateButton('extracto', 'Extracto', carAsyncValue.extracto),
+          _buildDateButton('soat', 'SOAT', carAsyncValue.soat),
+          _buildDateButton('tarjetaOp', 'Tarjeta de Operación', carAsyncValue.tarjetaOp),
+          _buildDateButton('tecnicoMec', 'Técnico Mecánica', carAsyncValue.tecnicoMec),
           _buildDateButton('ultCambioAceite', 'Último Cambio de Aceite', carAsyncValue.ultCambioAceite),
           _buildDateButton('proxCambioAceite', 'Próximo Cambio de Aceite', carAsyncValue.proxCambioAceite),
           const SizedBox(height: 20),
@@ -129,10 +129,6 @@ class _EditCarPageState extends ConsumerState<EditCarPage> {
   void _submitForm(BuildContext context, WidgetRef ref, String carId) {
     if (_isDisposed) return;
     final carNotifier = ref.read(selectedCarProvider.notifier);
-    
-    // Forzar isFirstTime a false antes de guardar
-    carNotifier.forceSetIsFirstTimeFalse();
-    
     final car = ref.read(selectedCarProvider);
     if (car != null) {
       FirebaseFirestore.instance

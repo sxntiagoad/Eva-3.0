@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:eva/models/car.dart';
 import 'package:eva/providers/current_user_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -17,7 +16,7 @@ Future<void> dataJson(
   preoperacional.inspecciones.forEach((key, value) {
     data[key] = value.map((innerKey, week) => MapEntry(innerKey, week.toMap()));
   });
-  
+
   final cars = await getAllCars();
   final currentCar = cars[preoperacional.carId];
 
@@ -27,12 +26,12 @@ Future<void> dataJson(
     "PLACAS No": currentCar?.carPlate ?? '',
     "MODELO": currentCar?.model ?? '',
     "MARCA": currentCar?.brand ?? '',
-    "LUGAR": "Bogotá",
+    "LUGAR": "Puerto Boyacá",
     "TIPO DE VEHICULO": currentCar?.carType ?? '',
-    "F.V . TARJETA OPERACIÓN": obtenerFecha(currentCar, 'F.V_tarjetaOp', 'V_tarjetaOp'),
-    "F.V . SOAT": obtenerFecha(currentCar, 'F.V_soat', 'V_soat'),
-    "F.V . TECNICOMECANICA": obtenerFecha(currentCar, 'F.V_tecnicomec', 'V_tecnicomec'),
-    "F.V . EXTRACTO": obtenerFecha(currentCar, 'F.V_extracto', 'V_extracto'),
+    "F.V . TARJETA OPERACIÓN": fecha(currentCar?.tarjetaOp),
+    "F.V . SOAT": fecha(currentCar?.soat),
+    "F.V . TECNICOMECANICA": fecha(currentCar?.tecnicoMec),
+    "F.V . EXTRACTO": fecha(currentCar?.extracto),
     "BOTIQUÍN TIPO": preoperacional.typeKit,
     "SEMANA DEL": formatDate(preoperacional.fechaInit),
     "AL": formatDate(preoperacional.fechaFinal),
@@ -75,8 +74,8 @@ Future<void> dataJson(
 
 String fecha(Timestamp? fecha) {
   if (fecha != null) {
-    print("bien");
     DateTime dateTime = fecha.toDate();
+
     String day = dateTime.day.toString().padLeft(2, '0');
     String month = dateTime.month.toString().padLeft(2, '0');
     String year = dateTime.year.toString();
@@ -85,30 +84,6 @@ String fecha(Timestamp? fecha) {
 
     String formattedDate = '$year-$month-$day $hour:$minute';
     return formattedDate;
-  }
-  return 'Sin fechaAA';
-}
-
-String obtenerFecha(Car? car, String campoOriginal, String campoF) {
-  if (car == null) return 'Sin fecha';
-  final carMap = car.toMap();
-  print('Car Map: $carMap');
-  print('Is First Time: ${car.isFirstTime}');
-  
-  if (car.isFirstTime == true) {
-    print('Es primera vez');
-    return fecha(carMap[campoOriginal] as Timestamp?);
-  } else {
-    print('No es primera vez');
-    final fMap = carMap['F'] as Map<String, dynamic>?;
-    print('F Map: $fMap');
-    if (fMap != null && fMap.containsKey(campoF)) {
-      final fechaStr = fMap[campoF] as String?;
-      if (fechaStr != null && fechaStr.isNotEmpty) {
-        print('Fecha de F: $fechaStr');
-        return fechaStr;
-      }
-    }
   }
   return 'Sin fecha';
 }

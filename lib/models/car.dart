@@ -13,22 +13,18 @@ class Car {
   final String model;
   final Timestamp? ultCambioAceite;
   final Timestamp? proxCambioAceite;
-  final bool? isFirstTime;
-  final Map<String, dynamic>? F;
 
   Car({
-    required this.extracto,
-    required this.soat,
-    required this.tarjetaOp,
-    required this.tecnicoMec,
+    this.extracto,
+    this.soat,
+    this.tarjetaOp,
+    this.tecnicoMec,
     required this.brand,
     required this.carPlate,
     required this.carType,
     required this.model,
-    this.isFirstTime = true,
     this.ultCambioAceite,
     this.proxCambioAceite,
-    this.F,
   });
 
   Car copyWith({
@@ -42,8 +38,6 @@ class Car {
     String? model,
     Timestamp? ultCambioAceite,
     Timestamp? proxCambioAceite,
-    bool? isFirstTime,
-    Map<String, dynamic>? F,
   }) {
     return Car(
       extracto: extracto ?? this.extracto,
@@ -56,45 +50,36 @@ class Car {
       model: model ?? this.model,
       ultCambioAceite: ultCambioAceite ?? this.ultCambioAceite,
       proxCambioAceite: proxCambioAceite ?? this.proxCambioAceite,
-      isFirstTime: isFirstTime ?? this.isFirstTime,
-      F: F ?? this.F,
     );
   }
 
   Map<String, dynamic> toMap() {
-    final map = {
-      'F.V_extracto': extracto,
-      'F.V_soat': soat,
-      'F.V_tarjetaOp': tarjetaOp,
-      'F.V_tecnicomec': tecnicoMec,
+    return {
+      'extracto': extracto,
+      'soat': soat,
+      'tarjetaOp': tarjetaOp,
+      'tecnicoMec': tecnicoMec,
       'brand': brand,
       'carPlate': carPlate,
       'carType': carType,
       'model': model,
       'ultCambioAceite': ultCambioAceite,
       'proxCambioAceite': proxCambioAceite,
-      'isFirstTime': isFirstTime,
     };
-    if (F != null) {
-      map['F'] = F;
-    }
-    return map;
   }
 
   factory Car.fromMap(Map<String, dynamic> map) {
     return Car(
-      extracto: map['F.V_extracto'],
-      soat: map['F.V_soat'],
-      tarjetaOp: map['F.V_tarjetaOp'],
-      tecnicoMec: map['F.V_tecnicomec'],
+      extracto: map['extracto'],
+      soat: map['soat'],
+      tarjetaOp: map['tarjetaOp'],
+      tecnicoMec: map['tecnicoMec'],
       brand: map['brand'] ?? '',
       carPlate: map['carPlate'] ?? '',
       carType: map['carType'] ?? '',
       model: map['model'] ?? '',
       ultCambioAceite: map['ultCambioAceite'],
       proxCambioAceite: map['proxCambioAceite'],
-      isFirstTime: map['isFirstTime'],
-      F: map['F'] as Map<String, dynamic>?,
     );
   }
 
@@ -104,7 +89,7 @@ class Car {
 
   @override
   String toString() {
-    return 'Car(extracto: $extracto, soat: $soat, tarjetaOp: $tarjetaOp, tecnicoMec: $tecnicoMec, brand: $brand, carPlate: $carPlate, carType: $carType, model: $model, ultCambioAceite: $ultCambioAceite, proxCambioAceite: $proxCambioAceite, isFirstTime: $isFirstTime, f: $F)';
+    return 'Car(extracto: $extracto, soat: $soat, tarjetaOp: $tarjetaOp, tecnicoMec: $tecnicoMec, brand: $brand, carPlate: $carPlate, carType: $carType, model: $model, ultCambioAceite: $ultCambioAceite, proxCambioAceite: $proxCambioAceite)';
   }
 
   @override
@@ -119,7 +104,9 @@ class Car {
         other.brand == brand &&
         other.carPlate == carPlate &&
         other.carType == carType &&
-        other.model == model;
+        other.model == model &&
+        other.ultCambioAceite == ultCambioAceite &&
+        other.proxCambioAceite == proxCambioAceite;
   }
 
   @override
@@ -131,6 +118,8 @@ class Car {
         brand.hashCode ^
         carPlate.hashCode ^
         carType.hashCode ^
-        model.hashCode;
+        model.hashCode ^
+        ultCambioAceite.hashCode ^
+        proxCambioAceite.hashCode;
   }
 }

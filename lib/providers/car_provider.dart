@@ -39,10 +39,10 @@ class SelectedCarNotifier extends StateNotifier<Car?> {
     if (state == null) return;
 
     state = state!.copyWith(
-      extracto: field == 'F.V_extracto' ? value : state!.extracto,
-      soat: field == 'F.V_soat' ? value : state!.soat,
-      tarjetaOp: field == 'F.V_tarjetaOp' ? value : state!.tarjetaOp,
-      tecnicoMec: field == 'F.V_tecnicomec' ? value : state!.tecnicoMec,
+      extracto: field == 'extracto' ? value : state!.extracto,
+      soat: field == 'soat' ? value : state!.soat,
+      tarjetaOp: field == 'tarjetaOp' ? value : state!.tarjetaOp,
+      tecnicoMec: field == 'tecnicoMec' ? value : state!.tecnicoMec,
       brand: field == 'brand' ? value : state!.brand,
       carPlate: field == 'carPlate' ? value : state!.carPlate,
       carType: field == 'carType' ? value : state!.carType,
@@ -51,15 +51,7 @@ class SelectedCarNotifier extends StateNotifier<Car?> {
           field == 'ultCambioAceite' ? value : state!.ultCambioAceite,
       proxCambioAceite:
           field == 'proxCambioAceite' ? value : state!.proxCambioAceite,
-      isFirstTime: field == 'isFirstTime' ? value : state!.isFirstTime,
     );
-  }
-
-  void forceSetIsFirstTimeFalse() {
-    if (state != null) {
-      state = state!.copyWith(isFirstTime: false);
-    }
-    print('isFirstTime forzado a false: ${state?.isFirstTime}');
   }
 
   void clearCar() {
