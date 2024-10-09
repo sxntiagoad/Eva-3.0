@@ -6,7 +6,6 @@ import 'package:eva/models/car.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 final excelFilesProvider = FutureProvider.autoDispose((ref) async {
-  // Observa el refreshTriggerProvider para que se actualice cuando cambie
   ref.watch(refreshTriggerProvider);
 
   try {
@@ -14,21 +13,18 @@ final excelFilesProvider = FutureProvider.autoDispose((ref) async {
     if (user == null) {
       throw Exception("Usuario no autenticado");
     }
-    final storageRef =
-        FirebaseStorage.instance.ref().child('preoperacionales/');
+    final storageRef = FirebaseStorage.instance.ref().child('preoperacionales/');
     final ListResult result = await storageRef.listAll();
-    final List<String> fileNames =
-        result.items.map((item) => item.name).toList();
+    final List fileNames = result.items.map((item) => item.name).toList();
     return fileNames;
   } catch (e) {
     throw Exception("Error al obtener archivos de Storage: $e");
   }
 });
 
-// Provider para obtener un Preoperacional por su UID
 final preoperacionalByUidProvider = FutureProvider.autoDispose
     .family<Preoperacional?, String>((ref, uid) async {
-  ref.watch(refreshTriggerProvider); // Observa el refreshTriggerProvider
+  ref.watch(refreshTriggerProvider);
   uid = uid.split('.')[0];
   final doc = await FirebaseFirestore.instance
       .collection('preoperacionales')
@@ -40,10 +36,9 @@ final preoperacionalByUidProvider = FutureProvider.autoDispose
   return null;
 });
 
-// Provider para obtener un Car por su ID
 final carByIdProvider =
     FutureProvider.autoDispose.family<Car?, String>((ref, carId) async {
-  ref.watch(refreshTriggerProvider); // Observa el refreshTriggerProvider
+  ref.watch(refreshTriggerProvider);
   final doc =
       await FirebaseFirestore.instance.collection('cars').doc(carId).get();
   if (doc.exists) {
@@ -54,7 +49,7 @@ final carByIdProvider =
 
 final userByIdProvider =
     FutureProvider.autoDispose.family<String, String>((ref, userId) async {
-  ref.watch(refreshTriggerProvider); // Observa el refreshTriggerProvider
+  ref.watch(refreshTriggerProvider);
   final doc =
       await FirebaseFirestore.instance.collection('users').doc(userId).get();
   if (doc.exists && doc.data()!.containsKey('fullName')) {
@@ -63,13 +58,10 @@ final userByIdProvider =
   return 'Usuario Desconocido';
 });
 
-// Añade este nuevo provider
 final refreshTriggerProvider = StateProvider.autoDispose((ref) => 0);
 
-// Modifica el relevantExcelFilesProvider para que sea autoDispose y use el refreshTriggerProvider
 final relevantExcelFilesProvider = FutureProvider.autoDispose
     .family<List<Map<String, dynamic>>, String>((ref, carPlate) async {
-  // Observa el refreshTriggerProvider para que se actualice cuando cambie
   ref.watch(refreshTriggerProvider);
 
   final excelFiles = await ref.watch(excelFilesProvider.future);
@@ -95,13 +87,18 @@ final relevantExcelFilesProvider = FutureProvider.autoDispose
       }
     }
   }
+
+  // Sort the relevantFiles list by finalDate in descending order
+  relevantFiles.sort((a, b) {
+    final aDate = a['finalDate'].isNotEmpty ? a['finalDate'] : a['initDate'];
+    final bDate = b['finalDate'].isNotEmpty ? b['finalDate'] : b['initDate'];
+    return bDate.compareTo(aDate); // Descending order
+  });
+
   return relevantFiles;
 });
 
-
-
-// Añade este nuevo provider
-class SelectedFilesNotifier extends StateNotifier<Set<String>> {
+class SelectedFilesNotifier extends StateNotifier<Set> {
   SelectedFilesNotifier() : super({});
 
   void toggleSelection(String fileName) {
@@ -118,54 +115,48 @@ class SelectedFilesNotifier extends StateNotifier<Set<String>> {
 }
 
 final selectedFilesProvider =
-    StateNotifierProvider<SelectedFilesNotifier, Set<String>>((ref) {
+    StateNotifierProvider<SelectedFilesNotifier, Set>((ref) {
   return SelectedFilesNotifier();
 });
 
-// Nuevo provider para manejar la eliminación de archivos
-final deleteFilesProvider = FutureProvider.autoDispose.family<void, List<String>>((ref, fileNames) async {
+final deleteFilesProvider = FutureProvider.autoDispose.family<void, List>((ref, fileNames) async {
   final storageRef = FirebaseStorage.instance.ref().child('preoperacionales/');
   final firestoreRef = FirebaseFirestore.instance.collection('preoperacionales');
 
   for (String fileName in fileNames) {
     try {
-      // Eliminar archivo de Firebase Storage
       await storageRef.child(fileName).delete();
-
-      // Eliminar documento correspondiente de Firestore
-      String docId = fileName.split('.')[0]; // Asumiendo que el nombre del archivo es el ID del documento
+      String docId = fileName.split('.')[0];
       await firestoreRef.doc(docId).delete();
-
     } catch (e) {
-      rethrow; // Propaga el error para manejarlo en la UI
+      rethrow;
     }
   }
 
-  // Actualizar los providers relevantes
   ref.invalidate(excelFilesProvider);
   ref.invalidate(relevantExcelFilesProvider);
   ref.read(refreshTriggerProvider.notifier).state++;
 });
 
-// Función auxiliar para invocar la eliminación de archivos
-Future<void> deleteSelectedFiles(WidgetRef ref) async {
+Future deleteSelectedFiles(WidgetRef ref) async {
   final selectedFiles = ref.read(selectedFilesProvider);
   if (selectedFiles.isNotEmpty) {
     try {
       await ref.read(deleteFilesProvider(selectedFiles.toList()).future);
       ref.read(selectedFilesProvider.notifier).clearSelection();
     } catch (e) {
-      // Aquí puedes manejar el error, por ejemplo, mostrando un mensaje al usuario
+      // Handle error
     }
   }
 }
 
-Future<void> deleteFiles(List<String> fileNames) async {
+Future deleteFiles(List fileNames) async {
   final storageRef = FirebaseStorage.instance.ref().child('preoperacionales/');
   for (String fileName in fileNames) {
     try {
       await storageRef.child(fileName).delete();
     } catch (e) {
+      // Handle error
     }
   }
 }
