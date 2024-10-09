@@ -19,10 +19,8 @@ final excelFilesProvider = FutureProvider.autoDispose((ref) async {
     final ListResult result = await storageRef.listAll();
     final List<String> fileNames =
         result.items.map((item) => item.name).toList();
-    print('Archivos obtenidos: $fileNames');
     return fileNames;
   } catch (e) {
-    print('Error en excelFilesProvider: $e');
     throw Exception("Error al obtener archivos de Storage: $e");
   }
 });
@@ -37,10 +35,8 @@ final preoperacionalByUidProvider = FutureProvider.autoDispose
       .doc(uid)
       .get();
   if (doc.exists) {
-    print('Preoperacional encontrado para UID: $uid');
     return Preoperacional.fromMap(doc.data()!).copyWith(docId: doc.id);
   }
-  print('No se encontró Preoperacional para UID: $uid');
   return null;
 });
 
@@ -51,10 +47,8 @@ final carByIdProvider =
   final doc =
       await FirebaseFirestore.instance.collection('cars').doc(carId).get();
   if (doc.exists) {
-    print('Carro encontrado para ID: $carId');
     return Car.fromMap(doc.data()!);
   }
-  print('No se encontró Carro para ID: $carId');
   return null;
 });
 
@@ -142,10 +136,8 @@ final deleteFilesProvider = FutureProvider.autoDispose.family<void, List<String>
       String docId = fileName.split('.')[0]; // Asumiendo que el nombre del archivo es el ID del documento
       await firestoreRef.doc(docId).delete();
 
-      print('Archivo y documento eliminados: $fileName');
     } catch (e) {
-      print('Error al eliminar archivo y documento $fileName: $e');
-      throw e; // Propaga el error para manejarlo en la UI
+      rethrow; // Propaga el error para manejarlo en la UI
     }
   }
 
@@ -163,7 +155,6 @@ Future<void> deleteSelectedFiles(WidgetRef ref) async {
       await ref.read(deleteFilesProvider(selectedFiles.toList()).future);
       ref.read(selectedFilesProvider.notifier).clearSelection();
     } catch (e) {
-      print('Error al eliminar archivos: $e');
       // Aquí puedes manejar el error, por ejemplo, mostrando un mensaje al usuario
     }
   }
@@ -174,9 +165,7 @@ Future<void> deleteFiles(List<String> fileNames) async {
   for (String fileName in fileNames) {
     try {
       await storageRef.child(fileName).delete();
-      print('Archivo eliminado: $fileName');
     } catch (e) {
-      print('Error al eliminar archivo $fileName: $e');
     }
   }
 }

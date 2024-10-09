@@ -117,7 +117,6 @@ class CarPos extends ConsumerWidget {
       final dateFormat = DateFormat('dd MMM yyyy HH:mm:ss');
       return dateFormat.format(date);
     } catch (e) {
-      print('Error al formatear la fecha: $e');
       return finalDate.isNotEmpty ? finalDate : initDate;
     }
   }
@@ -128,7 +127,6 @@ class CarPos extends ConsumerWidget {
       final url = await ref.getDownloadURL();
       return FirebaseFile(ref: ref, name: fileName, url: url);
     } catch (e) {
-      print('Error obteniendo archivo Firebase: $e');
       return null;
     }
   }
@@ -140,7 +138,6 @@ class CarPos extends ConsumerWidget {
         SnackBar(content: Text('Archivo descargado: ${file.name}')),
       );
     } catch (e) {
-      print('Error al descargar archivo: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al descargar archivo: $e')),
       );

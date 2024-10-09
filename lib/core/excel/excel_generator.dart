@@ -57,6 +57,7 @@ Future<void> dataJson(
     'FIRMA_USER': firmaUrl,
     'FIRMA_ENCARGADO': firmaEncargadoUrl,
     'LOGO': logoUrl,
+    'FIRMA_REP': firmaUrl,
   };
 
   data["PIE_TABLA"] = {
@@ -111,7 +112,6 @@ Future<String> getSESCOTURImageUrl() async {
     return url;
   } catch (e) {
     // ignore: avoid_print
-    print('Error al obtener la URL de SESCOTUR.png: $e');
     return ''; // Retorna una cadena vacía en caso de error
   }
 }
@@ -121,7 +121,6 @@ Future<String> getManagerSignatureUrl() async {
     return await FirebaseStorage.instance.ref('FIRMA_ROGER.png').getDownloadURL();
   } catch (e) {
     // ignore: avoid_print
-    print('Error al obtener la firma del encargado: $e');
     return '';
   }
 }
@@ -131,7 +130,6 @@ Future<String> getUserSignatureUrl(String uid) async {
     return await FirebaseStorage.instance.ref('firmas/$uid.png').getDownloadURL();
   } catch (e) {
     // ignore: avoid_print
-    print('Error al obtener la firma del usuario: $e');
     return '';
   }
 }
