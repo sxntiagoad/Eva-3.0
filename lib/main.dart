@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return MaterialApp(
+            title: 'EVA',
             home: Scaffold(
               body: Center(
                 child: Text('Error: ${snapshot.error}'),
@@ -37,14 +38,24 @@ class MyApp extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.done) {
           return ProviderScope(
             child: MaterialApp.router(
+              title: 'EVA',
+              onGenerateTitle: (context) => 'EVA',
               theme: AppTheme().getThemeData(),
               routerConfig: appRouter,
               debugShowCheckedModeBanner: false,
+              builder: (context, child) {
+                return Title(
+                  title: 'EVA',
+                  color: Colors.white,
+                  child: child ?? const SizedBox(),
+                );
+              },
             ),
           );
         }
 
         return const MaterialApp(
+          title: 'EVA',
           home: Scaffold(
             body: Center(
               child: CircularProgressIndicator(),

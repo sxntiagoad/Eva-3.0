@@ -16,112 +16,305 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final scaffoldKey = GlobalKey<ScaffoldState>();
     final userAsyncValue = ref.watch(currentUserProvider);
+    final size = MediaQuery.of(context).size;
+    final isWebPlatform = size.width > 600;
+    final colors = Theme.of(context).colorScheme;
 
     return userAsyncValue.when(
       data: (data) {
         return Scaffold(
           key: scaffoldKey,
-          drawer: CutomDrawer(scaffoldKey),
-          appBar: AppBar(
-            leadingWidth: 72,
-            title: Text(data.fullName),
-            leading: Container(
-              margin: const EdgeInsets.only(left: .0),
-              child: GestureDetector(
-                onTap: () {
-                  // context.pushNamed(UserDataScreen.name);
-                  scaffoldKey.currentState!.openDrawer();
-                },
-                child: Hero(
-                  tag: data.photoUrl,
-                  child: CircleAvatar(
-                    radius: 56,
-                    backgroundImage: NetworkImage(
-                      data.photoUrl,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          body: const Column(
+          backgroundColor: colors.surface,
+          drawer: isWebPlatform ? null : CutomDrawer(scaffoldKey),
+          body: Row(
             children: [
-              SizedBox(
-                height: 20,
-              ),
-              Text(
-                'Selecciona lo que deseas hacer',
-                style: TextStyle(
-                  color: AppTheme.mainColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
+              if (isWebPlatform)
+                Container(
+                  width: 280,
+                  decoration: BoxDecoration(
+                    color: colors.surface,
+                    boxShadow: [
+                      BoxShadow(
+                        color: colors.shadow.withOpacity(0.05),
+                        blurRadius: 10,
+                      ),
+                    ],
+                  ),
+                  child: CutomDrawer(scaffoldKey),
+                ),
+              Expanded(
+                child: CustomScrollView(
+                  slivers: [
+                    SliverAppBar(
+                      backgroundColor: colors.surface,
+                      expandedHeight: isWebPlatform ? 180 : 200,
+                      floating: false,
+                      pinned: true,
+                      automaticallyImplyLeading: !isWebPlatform,
+                      flexibleSpace: FlexibleSpaceBar(
+                        background: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                AppTheme.mainColor.withOpacity(0.05),
+                                colors.surface,
+                              ],
+                            ),
+                            borderRadius: const BorderRadius.vertical(
+                              bottom: Radius.circular(30),
+                            ),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Hero(
+                                tag: 'logo-tag',
+                                child: Container(
+                                  padding: const EdgeInsets.all(3),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: AppTheme.mainColor.withOpacity(0.2),
+                                      width: 2,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppTheme.mainColor.withOpacity(0.1),
+                                        blurRadius: 10,
+                                        spreadRadius: 1,
+                                      ),
+                                    ],
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: isWebPlatform ? 35 : 40,
+                                    backgroundImage: const AssetImage('assets/logo_eva.png'),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                'Bienvenido de nuevo,',
+                                style: TextStyle(
+                                  color: AppTheme.mainColor.withOpacity(0.7),
+                                  fontSize: isWebPlatform ? 14 : 16,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                data.fullName,
+                                style: TextStyle(
+                                  color: AppTheme.mainColor,
+                                  fontSize: isWebPlatform ? 20 : 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SliverPadding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isWebPlatform ? 40 : 20,
+                        vertical: 30,
+                      ),
+                      sliver: SliverToBoxAdapter(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '¿Qué deseas hacer hoy?',
+                              style: TextStyle(
+                                fontSize: isWebPlatform ? 26 : 24,
+                                fontWeight: FontWeight.w600,
+                                color: colors.onSurface,
+                              ),
+                            ),
+                            const SizedBox(height: 30),
+                            _DashboardGrid(isWebPlatform: isWebPlatform),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              _CustomButton(
-                icon: Icons.article_outlined,
-                text: 'Generar nuevo preoperacional',
-                navigateTo: NewPreoperacionalScree.name,
-              ),
-              _CustomButton(
-                icon: Icons.article_outlined,
-                text: 'Editar preoperacional ya existente',
-                navigateTo: ListPreoperacionalesScreen.name,
-              )
             ],
           ),
         );
       },
-      loading: () => const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
-      error: (error, stack) => Center(child: Text('Error: $error')),
+      loading: () => const _LoadingView(),
+      error: (error, stack) => _ErrorView(error: error.toString()),
     );
   }
 }
 
-class _CustomButton extends StatelessWidget {
-  final String navigateTo;
-  final IconData icon;
-  final String text;
+class _DashboardGrid extends StatelessWidget {
+  final bool isWebPlatform;
 
-  const _CustomButton({
-    required this.navigateTo,
+  const _DashboardGrid({required this.isWebPlatform});
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: isWebPlatform ? 4 : 2,
+      crossAxisSpacing: isWebPlatform ? 25 : 15,
+      mainAxisSpacing: isWebPlatform ? 25 : 15,
+      children: [
+        _DashboardCard(
+          title: 'Nuevo\nPreoperacional',
+          subtitle: 'Crear nuevo registro',
+          icon: Icons.add_circle_outline,
+          color: AppTheme.mainColor,
+          isMain: true,
+          onTap: () => context.pushNamed(NewPreoperacionalScree.name),
+          isWebPlatform: isWebPlatform,
+        ),
+        _DashboardCard(
+          title: 'Editar\nPreoperacional',
+          subtitle: 'Modificar existente',
+          icon: Icons.edit_document,
+          color: AppTheme.mainColor,
+          onTap: () => context.pushNamed(ListPreoperacionalesScreen.name),
+          isWebPlatform: isWebPlatform,
+        ),
+        _DashboardCard(
+          title: 'Estadísticas',
+          subtitle: 'Ver reportes',
+          icon: Icons.bar_chart,
+          color: AppTheme.mainColor,
+          onTap: () {},
+          isWebPlatform: isWebPlatform,
+        ),
+        _DashboardCard(
+          title: 'Historial',
+          subtitle: 'Registros anteriores',
+          icon: Icons.history,
+          color: AppTheme.mainColor,
+          onTap: () {},
+          isWebPlatform: isWebPlatform,
+        ),
+      ],
+    );
+  }
+}
+
+class _DashboardCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+  final bool isWebPlatform;
+  final bool isMain;
+
+  const _DashboardCard({
+    required this.title,
+    required this.subtitle,
     required this.icon,
-    required this.text,
+    required this.color,
+    required this.onTap,
+    required this.isWebPlatform,
+    this.isMain = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        context.pushNamed(navigateTo);
-      },
-      child: Container(
-        width: double.infinity,
-        margin: const EdgeInsets.all(16).copyWith(bottom: 0),
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: AppTheme.mainColor,
-          borderRadius: BorderRadius.circular(8),
+    final colors = Theme.of(context).colorScheme;
+
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: isMain ? color : color.withOpacity(0.1),
+          width: isMain ? 2 : 1,
         ),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              color: Colors.white,
-            ),
-            const Spacer(),
-            Text(
-              text,
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold),
-            ),
-            const Spacer(),
-          ],
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: EdgeInsets.all(isWebPlatform ? 24 : 20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: isMain ? color.withOpacity(0.05) : Colors.white,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  size: isWebPlatform ? 32 : 28,
+                  color: color,
+                ),
+              ),
+              SizedBox(height: isWebPlatform ? 16 : 12),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: colors.onSurface,
+                  fontSize: isWebPlatform ? 16 : 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: colors.onSurface.withOpacity(0.6),
+                  fontSize: isWebPlatform ? 13 : 12,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LoadingView extends StatelessWidget {
+  const _LoadingView();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+        ),
+      ),
+    );
+  }
+}
+
+class _ErrorView extends StatelessWidget {
+  final String error;
+
+  const _ErrorView({required this.error});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Text(
+          'Error: $error',
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.error,
+          ),
         ),
       ),
     );

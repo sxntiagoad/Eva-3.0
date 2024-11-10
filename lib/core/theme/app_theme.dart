@@ -64,4 +64,21 @@ class AppTheme {
       fontSize: 20,
     );
   }
+
+  static final drawerTextStyle = GoogleFonts.poppins(
+    fontSize: 15,
+    color: Colors.black87,
+    fontWeight: FontWeight.w500,
+    letterSpacing: -0.3,
+  );
+
+  static final drawerTitleStyle = GoogleFonts.poppins(
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
+    color: mainColor,
+    letterSpacing: -0.5,
+  );
+
+  static const drawerIconSize = 22.0;
+  static const drawerBorderRadius = 12.0;
 }
