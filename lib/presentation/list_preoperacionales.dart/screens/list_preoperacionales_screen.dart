@@ -8,7 +8,7 @@ class ListPreoperacionalesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Preoperacinales'),),
+      appBar: AppBar(title: const Text('Preoperacionales'),),
       body: const ListPreoperacionales(),
     );
   }

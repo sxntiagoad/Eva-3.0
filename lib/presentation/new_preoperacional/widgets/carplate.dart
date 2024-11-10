@@ -8,7 +8,7 @@ class CarPlate extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    String? role;
+    final selectedCar = ref.watch(newPreoperacionalProvider).carId;
     final carsProvider = ref.watch(mapCarsProvider);
 
     return carsProvider.when(
@@ -16,7 +16,7 @@ class CarPlate extends ConsumerWidget {
         decoration: const InputDecoration(
           labelText: 'Seleccione un carro',
         ),
-        value: role,
+        value: selectedCar.isEmpty ? null : selectedCar,
         items: data.entries
             .map(
               (e) => DropdownMenuItem(
@@ -26,7 +26,6 @@ class CarPlate extends ConsumerWidget {
             )
             .toList(),
         onChanged: (value) {
-          role = value;
           ref.read(newPreoperacionalProvider.notifier).updateCarId(value ?? '');
         },
       ),

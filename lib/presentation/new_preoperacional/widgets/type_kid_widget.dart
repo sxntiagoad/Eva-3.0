@@ -8,7 +8,7 @@ class TypeKidWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    String? role;
+    final selectedType = ref.watch(newPreoperacionalProvider).typeKit;
     final typeKid = ref.watch(typeKidprovider);
 
     return typeKid.when(
@@ -16,7 +16,7 @@ class TypeKidWidget extends ConsumerWidget {
         decoration: const InputDecoration(
           labelText: 'Seleccione tipo botiquin',
         ),
-        value: role,
+        value: selectedType.isEmpty ? null : selectedType,
         items: List.generate(
           data.length,
           (index) {
@@ -29,7 +29,6 @@ class TypeKidWidget extends ConsumerWidget {
           },
         ),
         onChanged: (value) {
-          role = value;
           ref
               .read(newPreoperacionalProvider.notifier)
               .updateTypeKit(value ?? '');
