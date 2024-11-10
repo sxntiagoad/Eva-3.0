@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eva/models/car.dart';
 import 'package:eva/providers/car_provider.dart';
+import 'package:intl/intl.dart';
 
 class EditCarPage extends ConsumerStatefulWidget {
   final String carId;
@@ -55,62 +56,139 @@ class _EditCarPageState extends ConsumerState<EditCarPage> {
 
     if (carAsyncValue == null) {
       return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Editar ${carAsyncValue.brand} ${carAsyncValue.model}'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Colors.white,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: [
-          TextFormField(
-            initialValue: carAsyncValue.brand,
-            decoration: const InputDecoration(labelText: 'Marca'),
-            onChanged: (value) => carNotifier.updateField('brand', value),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Card(
+                elevation: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Información del Vehículo',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        initialValue: carAsyncValue.brand,
+                        decoration: const InputDecoration(
+                          labelText: 'Marca',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.directions_car),
+                        ),
+                        onChanged: (value) => carNotifier.updateField('brand', value),
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        initialValue: carAsyncValue.model,
+                        decoration: const InputDecoration(
+                          labelText: 'Modelo',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.calendar_today),
+                        ),
+                        onChanged: (value) => carNotifier.updateField('model', value),
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        initialValue: carAsyncValue.carPlate,
+                        decoration: const InputDecoration(
+                          labelText: 'Placa',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.pin),
+                        ),
+                        onChanged: (value) => carNotifier.updateField('carPlate', value),
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        initialValue: carAsyncValue.carType,
+                        decoration: const InputDecoration(
+                          labelText: 'Tipo de Carro',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.category),
+                        ),
+                        onChanged: (value) => carNotifier.updateField('carType', value),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Card(
+                elevation: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Documentación y Mantenimiento',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildDateButton('extracto', 'Extracto', Icons.description, carAsyncValue.extracto),
+                      _buildDateButton('soat', 'SOAT', Icons.security, carAsyncValue.soat),
+                      _buildDateButton('tarjetaOp', 'Tarjeta de Operación', Icons.credit_card, carAsyncValue.tarjetaOp),
+                      _buildDateButton('tecnicoMec', 'Técnico Mecánica', Icons.build, carAsyncValue.tecnicoMec),
+                      _buildDateButton('ultCambioAceite', 'Último Cambio de Aceite', Icons.oil_barrel, carAsyncValue.ultCambioAceite),
+                      _buildDateButton('proxCambioAceite', 'Próximo Cambio de Aceite', Icons.update, carAsyncValue.proxCambioAceite),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton.icon(
+                onPressed: () => _submitForm(context, ref, widget.carId),
+                icon: const Icon(Icons.save),
+                label: const Text('Guardar Cambios'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ],
           ),
-          TextFormField(
-            initialValue: carAsyncValue.model,
-            decoration: const InputDecoration(labelText: 'Modelo'),
-            onChanged: (value) => carNotifier.updateField('model', value),
-          ),
-          TextFormField(
-            initialValue: carAsyncValue.carPlate,
-            decoration: const InputDecoration(labelText: 'Placa'),
-            onChanged: (value) => carNotifier.updateField('carPlate', value),
-          ),
-          TextFormField(
-            initialValue: carAsyncValue.carType,
-            decoration: const InputDecoration(labelText: 'Tipo de Carro'),
-            onChanged: (value) => carNotifier.updateField('carType', value),
-          ),
-          const SizedBox(height: 20),
-          _buildDateButton('extracto', 'Extracto', carAsyncValue.extracto),
-          _buildDateButton('soat', 'SOAT', carAsyncValue.soat),
-          _buildDateButton('tarjetaOp', 'Tarjeta de Operación', carAsyncValue.tarjetaOp),
-          _buildDateButton('tecnicoMec', 'Técnico Mecánica', carAsyncValue.tecnicoMec),
-          _buildDateButton('ultCambioAceite', 'Último Cambio de Aceite', carAsyncValue.ultCambioAceite),
-          _buildDateButton('proxCambioAceite', 'Próximo Cambio de Aceite', carAsyncValue.proxCambioAceite),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () => _submitForm(context, ref, widget.carId),
-            child: const Text('Guardar Cambios'),
-          ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildDateButton(String field, String label, Timestamp? currentValue) {
-    return ElevatedButton(
-      onPressed: () => _selectDate(context, field, currentValue),
-      child: Text(currentValue != null
-          ? '$label: ${currentValue.toDate().toLocal()}'
-          : 'Seleccionar Fecha de $label'),
+  Widget _buildDateButton(String field, String label, IconData icon, Timestamp? currentValue) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
+      child: ElevatedButton.icon(
+        onPressed: () => _selectDate(context, field, currentValue),
+        icon: Icon(icon),
+        label: Text(
+          currentValue != null
+              ? '$label: ${DateFormat('dd/MM/yyyy').format(currentValue.toDate())}'
+              : 'Seleccionar Fecha de $label',
+        ),
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          alignment: Alignment.centerLeft,
+          backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+          foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+      ),
     );
   }
 

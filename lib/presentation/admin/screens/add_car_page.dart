@@ -36,59 +36,148 @@ class _AddCarPageState extends ConsumerState<AddCarPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Agregar Nuevo Carro'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Colors.white,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: [
-          TextFormField(
-            decoration: const InputDecoration(labelText: 'Marca'),
-            onChanged: (value) => setState(() => newCar = newCar.copyWith(brand: value)),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Card(
+                elevation: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Información Básica',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Marca',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.directions_car),
+                        ),
+                        onChanged: (value) => setState(() => newCar = newCar.copyWith(brand: value)),
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Modelo',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.calendar_today),
+                        ),
+                        onChanged: (value) => setState(() => newCar = newCar.copyWith(model: value)),
+                      ),
+                      TextFormField(
+                        decoration: const InputDecoration(labelText: 'Placa'),
+                        onChanged: (value) => setState(() => newCar = newCar.copyWith(carPlate: value)),
+                      ),
+                      TextFormField(
+                        decoration: const InputDecoration(labelText: 'Tipo de Carro'),
+                        onChanged: (value) => setState(() => newCar = newCar.copyWith(carType: value)),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Card(
+                elevation: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Fechas Importantes',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildDateButton(
+                        icon: Icons.description,
+                        label: 'Extracto',
+                        date: newCar.extracto,
+                        onPressed: () => _selectDate(context, 'extracto'),
+                      ),
+                      _buildDateButton(
+                        icon: Icons.security,
+                        label: 'SOAT',
+                        date: newCar.soat,
+                        onPressed: () => _selectDate(context, 'soat'),
+                      ),
+                      _buildDateButton(
+                        icon: Icons.credit_card,
+                        label: 'Tarjeta de Operación',
+                        date: newCar.tarjetaOp,
+                        onPressed: () => _selectDate(context, 'tarjetaOp'),
+                      ),
+                      _buildDateButton(
+                        icon: Icons.build,
+                        label: 'Técnico Mecánica',
+                        date: newCar.tecnicoMec,
+                        onPressed: () => _selectDate(context, 'tecnicoMec'),
+                      ),
+                      _buildDateButton(
+                        icon: Icons.oil_barrel,
+                        label: 'Último Cambio de Aceite',
+                        date: newCar.ultCambioAceite,
+                        onPressed: () => _selectDate(context, 'ultCambioAceite'),
+                      ),
+                      _buildDateButton(
+                        icon: Icons.oil_barrel,
+                        label: 'Próximo Cambio de Aceite',
+                        date: newCar.proxCambioAceite,
+                        onPressed: () => _selectDate(context, 'proxCambioAceite'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton.icon(
+                onPressed: _submitForm,
+                icon: const Icon(Icons.save),
+                label: const Text('Guardar Carro'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ],
           ),
-          TextFormField(
-            decoration: const InputDecoration(labelText: 'Modelo'),
-            onChanged: (value) => setState(() => newCar = newCar.copyWith(model: value)),
-          ),
-          TextFormField(
-            decoration: const InputDecoration(labelText: 'Placa'),
-            onChanged: (value) => setState(() => newCar = newCar.copyWith(carPlate: value)),
-          ),
-          TextFormField(
-            decoration: const InputDecoration(labelText: 'Tipo de Carro'),
-            onChanged: (value) => setState(() => newCar = newCar.copyWith(carType: value)),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () => _selectDate(context, 'extracto'),
-            child: Text(newCar.extracto != null ? 'Extracto: ${newCar.extracto!.toDate().toLocal()}' : 'Seleccionar Fecha de Extracto'),
-          ),
-          ElevatedButton(
-            onPressed: () => _selectDate(context, 'soat'),
-            child: Text(newCar.soat != null ? 'SOAT: ${newCar.soat!.toDate().toLocal()}' : 'Seleccionar Fecha de SOAT'),
-          ),
-          ElevatedButton(
-            onPressed: () => _selectDate(context, 'tarjetaOp'),
-            child: Text(newCar.tarjetaOp != null ? 'Tarjeta de Operación: ${newCar.tarjetaOp!.toDate().toLocal()}' : 'Seleccionar Fecha de Tarjeta de Operación'),
-          ),
-          ElevatedButton(
-            onPressed: () => _selectDate(context, 'tecnicoMec'),
-            child: Text(newCar.tecnicoMec != null ? 'Técnico Mecánica: ${newCar.tecnicoMec!.toDate().toLocal()}' : 'Seleccionar Fecha de Técnico Mecánica'),
-          ),
-          ElevatedButton(
-            onPressed: () => _selectDate(context, 'ultCambioAceite'),
-            child: Text(newCar.ultCambioAceite != null ? 'Último Cambio de Aceite: ${newCar.ultCambioAceite!.toDate().toLocal()}' : 'Seleccionar Fecha de Último Cambio de Aceite'),
-          ),
-          ElevatedButton(
-            onPressed: () => _selectDate(context, 'proxCambioAceite'),
-            child: Text(newCar.proxCambioAceite != null ? 'Próximo Cambio de Aceite: ${newCar.proxCambioAceite!.toDate().toLocal()}' : 'Seleccionar Fecha de Próximo Cambio de Aceite'),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: _submitForm,
-            child: const Text('Guardar Carro'),
-          ),
-        ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDateButton({
+    required IconData icon,
+    required String label,
+    required Timestamp? date,
+    required VoidCallback onPressed,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon),
+        label: Text(
+          date != null ? '$label: ${date.toDate().toLocal()}' : 'Seleccionar $label',
+        ),
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          alignment: Alignment.centerLeft,
+          backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+          foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
       ),
     );
   }

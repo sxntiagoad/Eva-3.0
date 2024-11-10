@@ -12,103 +12,170 @@ class AdminPanelScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 768;
+
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text('Panel de Administración'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        titleTextStyle: const TextStyle(
+          color: Colors.black87,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
       ),
-      body: const Column(
-        crossAxisAlignment: CrossAxisAlignment.center, // Asegura que todo esté centrado horizontalmente
-        children: [
-          SizedBox(height: 20),  // Controla la distancia entre el AppBar y el contenido
-          Center( // Centra horizontalmente el texto
-            child: Text(
-              'Selecciona una opción',
-              style: TextStyle(
-                color: AppTheme.mainColor,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
+      body: Center(
+        child: Container(
+          constraints: BoxConstraints(
+            maxWidth: isDesktop ? 1200 : double.infinity,
+          ),
+          padding: EdgeInsets.all(isDesktop ? 32.0 : 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Bienvenido al Panel de Control',
+                style: TextStyle(
+                  fontSize: isDesktop ? 28 : 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
               ),
-            ),
-          ),
-          SizedBox(height: 40),  // Aumenta o disminuye esta altura para ajustar la posición vertical del botón
-          Center(  // Centra horizontalmente el contenido
-            child: Column(
-              children: [
-                CustomButton(
-                  icon: Icons.directions_car,
-                  text: 'Preoperacionales',
-                  navigateTo: AdminCars.name,
+              const SizedBox(height: 8),
+              Text(
+                'Selecciona una opción para comenzar',
+                style: TextStyle(
+                  fontSize: isDesktop ? 16 : 14,
+                  color: Colors.grey[600],
                 ),
-                CustomButton(
-                  icon: Icons.directions_car,
-                  text: 'Gestionar Carros',
-                  navigateTo: CarManagementPage.name,
+              ),
+              const SizedBox(height: 32),
+              if (isDesktop)
+                Row(
+                  children: [
+                    Expanded(child: _buildOptionCard(
+                      context: context,
+                      title: 'Preoperacionales',
+                      description: 'Gestiona los preoperacionales de los vehículos',
+                      icon: Icons.assignment_outlined,
+                      route: AdminCars.name,
+                      isDesktop: true,
+                    )),
+                    const SizedBox(width: 24),
+                    Expanded(child: _buildOptionCard(
+                      context: context,
+                      title: 'Gestionar Carros',
+                      description: 'Administra la flota de vehículos',
+                      icon: Icons.directions_car_outlined,
+                      route: CarManagementPage.name,
+                      isDesktop: true,
+                    )),
+                  ],
+                )
+              else
+                Column(
+                  children: [
+                    _buildOptionCard(
+                      context: context,
+                      title: 'Preoperacionales',
+                      description: 'Gestiona los preoperacionales de los vehículos',
+                      icon: Icons.assignment_outlined,
+                      route: AdminCars.name,
+                      isDesktop: false,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildOptionCard(
+                      context: context,
+                      title: 'Gestionar Carros',
+                      description: 'Administra la flota de vehículos',
+                      icon: Icons.directions_car_outlined,
+                      route: CarManagementPage.name,
+                      isDesktop: false,
+                    ),
+                  ],
                 ),
-              ],
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
-}
 
-class CustomButton extends StatelessWidget {
-  final String navigateTo;
-  final IconData icon;
-  final String text;
-
-  const CustomButton({
-    super.key,
-    required this.navigateTo,
-    required this.icon,
-    required this.text,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        context.push('/$navigateTo'); // Navega a la ruta especificada
-      },
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.8, // 80% del ancho de la pantalla
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        decoration: BoxDecoration(
-          color: AppTheme.mainColor,
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
-              spreadRadius: 1,
-              blurRadius: 3,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 24,
-            ),
-            Text(
-              text,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+  Widget _buildOptionCard({
+    required BuildContext context,
+    required String title,
+    required String description,
+    required IconData icon,
+    required String route,
+    required bool isDesktop,
+  }) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.grey.shade200),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => context.push('/$route'),
+        child: Padding(
+          padding: EdgeInsets.all(isDesktop ? 24.0 : 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  icon,
+                  size: isDesktop ? 32 : 28,
+                  color: Colors.blue.shade700,
+                ),
               ),
-            ),
-            const Icon(
-              Icons.arrow_forward_ios,
-              color: Colors.white,
-              size: 18,
-            ),
-          ],
+              SizedBox(height: isDesktop ? 24 : 16),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: isDesktop ? 20 : 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                description,
+                style: TextStyle(
+                  fontSize: isDesktop ? 14 : 13,
+                  color: Colors.grey[600],
+                ),
+              ),
+              SizedBox(height: isDesktop ? 24 : 16),
+              Row(
+                children: [
+                  Text(
+                    'Acceder',
+                    style: TextStyle(
+                      fontSize: isDesktop ? 14 : 13,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue.shade700,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(
+                    Icons.arrow_forward,
+                    size: isDesktop ? 18 : 16,
+                    color: Colors.blue.shade700,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

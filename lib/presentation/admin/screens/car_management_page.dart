@@ -14,255 +14,284 @@ class CarManagementPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedCars = ref.watch(selectedCarsProvider);
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 768;
 
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         title: const Text('Gestión de Carros'),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
+        titleTextStyle: const TextStyle(
+          color: Colors.black87,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
         actions: [
           if (selectedCars.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: () async {
-                await deleteSelectedCars(ref);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Carros eliminados')),
-                );
-              },
+            Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: IconButton(
+                icon: const Icon(Icons.delete, color: Colors.red),
+                onPressed: () async {
+                  await deleteSelectedCars(ref);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Carros eliminados')),
+                  );
+                },
+              ),
             ),
         ],
       ),
-      body: Column(
-        children: [
-          CustomButton(
-            icon: Icons.add,
-            text: 'Agregar Nuevo Carro',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const AddCarPage()),
-              ).then((_) {
-                ref.invalidate(mapCarsProvider);
-              });
-            },
-          ),
-          const SizedBox(height: 20),
-          Expanded(
-            child: FutureBuilder<QuerySnapshot>(
-              future: FirebaseFirestore.instance.collection('cars').get(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                }
-
-                final cars = snapshot.data?.docs ?? [];
-
-                return GridView.builder(
-                  padding: const EdgeInsets.all(16),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    childAspectRatio:
-                        2.5, // Ajustado para hacer los containers más anchos
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                  ),
-                  itemCount: cars.length,
-                  itemBuilder: (context, index) {
-                    final carDoc = cars[index];
-                    final carId = carDoc.id;
-                    final carData = carDoc.data() as Map<String, dynamic>;
-                    final car = Car.fromMap(carData);
-                    final isSelected = selectedCars.contains(carId);
-
-                    return Stack(
+      body: SafeArea(
+        child: Center(
+          child: Container(
+            constraints: BoxConstraints(maxWidth: isDesktop ? 1200 : double.infinity),
+            padding: EdgeInsets.symmetric(
+              horizontal: isDesktop ? 32.0 : 16.0,
+              vertical: 24.0,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Card(
+                  elevation: 0,
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        GestureDetector(
-                          onTap: () {
+                        Text(
+                          'Vehículos Registrados',
+                          style: TextStyle(
+                            fontSize: isDesktop ? 24 : 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        ElevatedButton.icon(
+                          onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                builder: (context) => EditCarPage(carId: carId),
-                              ),
+                              MaterialPageRoute(builder: (context) => const AddCarPage()),
                             ).then((_) {
                               ref.invalidate(mapCarsProvider);
                             });
                           },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: AppTheme.mainColor.withOpacity(0.8),
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.3),
-                                  spreadRadius: 2,
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
+                          icon: const Icon(Icons.add),
+                          label: const Text('Nuevo Vehículo'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue[700],
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    flex: 2,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          car.brand,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          car.model,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        Text(
-                                          car.carPlate,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          car.carType,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          top: 12,
-                          left: 12,
-                          child: GestureDetector(
-                            onTap: () {
-                              ref
-                                  .read(selectedCarsProvider.notifier)
-                                  .toggleSelection(carId);
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(2),
-                              decoration: BoxDecoration(
-                                color: isSelected ? Colors.blue : Colors.white,
-                                shape: BoxShape.circle,
-                                border:
-                                    Border.all(color: Colors.blue, width: 2),
-                              ),
-                              child: Icon(
-                                isSelected
-                                    ? Icons.check
-                                    : Icons.circle_outlined,
-                                size: 20,
-                                color: isSelected ? Colors.white : Colors.blue,
-                              ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
                             ),
                           ),
                         ),
                       ],
-                    );
-                  },
-                );
-              },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: Card(
+                    elevation: 0,
+                    color: Colors.white,
+                    child: _CarGrid(isDesktop: isDesktop),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
 }
 
-class CustomButton extends StatelessWidget {
-  final IconData icon;
-  final String text;
+class _CarGrid extends ConsumerWidget {
+  final bool isDesktop;
+
+  const _CarGrid({required this.isDesktop});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return FutureBuilder<QuerySnapshot>(
+      future: FirebaseFirestore.instance.collection('cars').get(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+
+        final cars = snapshot.data?.docs ?? [];
+
+        return GridView.builder(
+          padding: EdgeInsets.all(isDesktop ? 24 : 16),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: _getGridCrossAxisCount(MediaQuery.of(context).size.width),
+            childAspectRatio: 1.5,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+          ),
+          itemCount: cars.length,
+          itemBuilder: (context, index) => _CarCard(
+            carDoc: cars[index],
+            isDesktop: isDesktop,
+          ),
+        );
+      },
+    );
+  }
+
+  int _getGridCrossAxisCount(double width) {
+    if (width > 1400) return 4;
+    if (width > 1000) return 3;
+    if (width > 700) return 2;
+    return 1;
+  }
+}
+
+class _CarCard extends ConsumerWidget {
+  final QueryDocumentSnapshot carDoc;
+  final bool isDesktop;
+
+  const _CarCard({
+    required this.carDoc,
+    required this.isDesktop,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final carId = carDoc.id;
+    final carData = carDoc.data() as Map<String, dynamic>;
+    final car = Car.fromMap(carData);
+    final selectedCars = ref.watch(selectedCarsProvider);
+    final isSelected = selectedCars.contains(carId);
+
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: isSelected ? Colors.blue[700]! : Colors.grey[200]!,
+          width: 2,
+        ),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EditCarPage(carId: carId),
+            ),
+          ).then((_) {
+            ref.invalidate(mapCarsProvider);
+          });
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          car.brand,
+                          style: TextStyle(
+                            fontSize: isDesktop ? 18 : 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          car.model,
+                          style: TextStyle(
+                            fontSize: isDesktop ? 14 : 12,
+                            color: Colors.grey[600],
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  _SelectionCheckbox(
+                    isSelected: isSelected,
+                    onTap: () {
+                      ref.read(selectedCarsProvider.notifier).toggleSelection(carId);
+                    },
+                  ),
+                ],
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.blue[50],
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  car.carPlate,
+                  style: TextStyle(
+                    color: Colors.blue[700],
+                    fontWeight: FontWeight.bold,
+                    fontSize: isDesktop ? 16 : 14,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                car.carType,
+                style: TextStyle(
+                  fontSize: isDesktop ? 14 : 12,
+                  color: Colors.grey[600],
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SelectionCheckbox extends StatelessWidget {
+  final bool isSelected;
   final VoidCallback onTap;
 
-  const CustomButton({
-    super.key,
-    required this.icon,
-    required this.text,
+  const _SelectionCheckbox({
+    required this.isSelected,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.8,
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        decoration: BoxDecoration(
-          color: AppTheme.mainColor,
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
-              spreadRadius: 1,
-              blurRadius: 3,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 24,
-            ),
-            Text(
-              text,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const Icon(
-              Icons.arrow_forward_ios,
-              color: Colors.white,
-              size: 18,
-            ),
-          ],
-        ),
+    return IconButton(
+      onPressed: onTap,
+      icon: Icon(
+        isSelected ? Icons.check_circle : Icons.circle_outlined,
+        color: isSelected ? Colors.blue[700] : Colors.grey[400],
+        size: 24,
       ),
     );
   }
