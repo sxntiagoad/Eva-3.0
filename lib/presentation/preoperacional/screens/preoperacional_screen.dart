@@ -77,33 +77,38 @@ class _PreoperacionalScreenState extends ConsumerState<PreoperacionalScreen> {
             )
           ],
         ),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: ListView(
-            children: const [
-              SizedBox(height: 10),
-              CarPlateDb(),
-              SizedBox(
-                height: 15,
+        body: Column(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: ListView(
+                  children: const [
+                    SizedBox(height: 10),
+                    CarPlateDb(),
+                    SizedBox(height: 15),
+                    TypeKidDbWidget(),
+                    SizedBox(height: 10),
+                    KilometrajeDbWidget(),
+                    Divider(),
+                    ListCategoryDb(),
+                    SizedBox(height: 100),
+                    Divider(),
+                    ObservacionesDbWidget(),
+                    SizedBox(height: 80),
+                  ],
+                ),
               ),
-              TypeKidDbWidget(),
-              SizedBox(
-                height: 10,
-              ),
-              KilometrajeDbWidget(),
-              Divider(),
-              ListCategoryDb(),
-              SizedBox(
-                height: 100,
-              ),
-              Divider(),
-              ObservacionesDbWidget(),
-            ],
-          ),
+            ),
+          ],
         ),
-        bottomNavigationBar: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: UpdatePreoperacional(),
+        bottomNavigationBar: Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            bottom: 20 + MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: const UpdatePreoperacional(),
         ),
       ),
     );

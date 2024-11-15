@@ -158,47 +158,52 @@ class _DashboardGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: isWebPlatform ? 4 : 2,
-      crossAxisSpacing: isWebPlatform ? 25 : 15,
-      mainAxisSpacing: isWebPlatform ? 25 : 15,
-      children: [
-        _DashboardCard(
-          title: 'Nuevo\nPreoperacional',
-          subtitle: 'Crear nuevo registro',
-          icon: Icons.add_circle_outline,
-          color: AppTheme.mainColor,
-          isMain: true,
-          onTap: () => context.pushNamed(NewPreoperacionalScree.name),
-          isWebPlatform: isWebPlatform,
-        ),
-        _DashboardCard(
-          title: 'Editar\nPreoperacional',
-          subtitle: 'Modificar existente',
-          icon: Icons.edit_document,
-          color: AppTheme.mainColor,
-          onTap: () => context.pushNamed(ListPreoperacionalesScreen.name),
-          isWebPlatform: isWebPlatform,
-        ),
-        _DashboardCard(
-          title: 'Estadísticas',
-          subtitle: 'Ver reportes',
-          icon: Icons.bar_chart,
-          color: AppTheme.mainColor,
-          onTap: () {},
-          isWebPlatform: isWebPlatform,
-        ),
-        _DashboardCard(
-          title: 'Historial',
-          subtitle: 'Registros anteriores',
-          icon: Icons.history,
-          color: AppTheme.mainColor,
-          onTap: () {},
-          isWebPlatform: isWebPlatform,
-        ),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: isWebPlatform ? 4 : 2,
+          crossAxisSpacing: isWebPlatform ? 25 : 15,
+          mainAxisSpacing: isWebPlatform ? 25 : 15,
+          childAspectRatio: isWebPlatform ? 1.2 : 1.1,
+          children: [
+            _DashboardCard(
+              title: 'Nuevo\nPreoperacional',
+              subtitle: 'Crear nuevo registro',
+              icon: Icons.add_circle_outline,
+              color: AppTheme.mainColor,
+              isMain: true,
+              onTap: () => context.pushNamed(NewPreoperacionalScree.name),
+              isWebPlatform: isWebPlatform,
+            ),
+            _DashboardCard(
+              title: 'Editar\nPreoperacional',
+              subtitle: 'Modificar existente',
+              icon: Icons.edit_document,
+              color: AppTheme.mainColor,
+              onTap: () => context.pushNamed(ListPreoperacionalesScreen.name),
+              isWebPlatform: isWebPlatform,
+            ),
+            _DashboardCard(
+              title: 'Estadísticas',
+              subtitle: 'Ver reportes',
+              icon: Icons.bar_chart,
+              color: AppTheme.mainColor,
+              onTap: () {},
+              isWebPlatform: isWebPlatform,
+            ),
+            _DashboardCard(
+              title: 'Historial',
+              subtitle: 'Registros anteriores',
+              icon: Icons.history,
+              color: AppTheme.mainColor,
+              onTap: () {},
+              isWebPlatform: isWebPlatform,
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -239,33 +244,34 @@ class _DashboardCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Container(
-          padding: EdgeInsets.all(isWebPlatform ? 24 : 20),
+          padding: EdgeInsets.all(isWebPlatform ? 20 : 16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             color: isMain ? color.withOpacity(0.05) : Colors.white,
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: color.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   icon,
-                  size: isWebPlatform ? 32 : 28,
+                  size: isWebPlatform ? 28 : 24,
                   color: color,
                 ),
               ),
-              SizedBox(height: isWebPlatform ? 16 : 12),
+              SizedBox(height: isWebPlatform ? 12 : 8),
               Text(
                 title,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: colors.onSurface,
-                  fontSize: isWebPlatform ? 16 : 15,
+                  fontSize: isWebPlatform ? 15 : 14,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -275,7 +281,7 @@ class _DashboardCard extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: colors.onSurface.withOpacity(0.6),
-                  fontSize: isWebPlatform ? 13 : 12,
+                  fontSize: isWebPlatform ? 12 : 11,
                 ),
               ),
             ],
