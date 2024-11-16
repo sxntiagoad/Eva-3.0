@@ -14,7 +14,8 @@ class CarPos extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final relevantExcelFiles = ref.watch(relevantExcelFilesProvider(car.carPlate));
+    final relevantExcelFiles =
+        ref.watch(relevantExcelFilesProvider(car.carPlate));
     final selectedFiles = ref.watch(selectedFilesProvider);
 
     void refreshData() {
@@ -27,84 +28,401 @@ class CarPos extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Archivos de ${car.carPlate}'),
+        backgroundColor: Colors.blue.shade50,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(car.carPlate,
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue.shade900)),
+            Text('Preoperacionales',
+                style: TextStyle(fontSize: 14, color: Colors.blue.shade700)),
+          ],
+        ),
         actions: [
+          if (selectedFiles.isNotEmpty)
+            Chip(
+              label: Text('${selectedFiles.length} seleccionados',
+                  style: const TextStyle(color: Colors.white)),
+              backgroundColor: Colors.blue.shade600,
+            ),
+          const SizedBox(width: 8),
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: Icon(Icons.refresh, color: Colors.blue.shade700),
             onPressed: refreshData,
+            tooltip: 'Actualizar datos',
           ),
           IconButton(
-            icon: const Icon(Icons.delete),
+            icon: Icon(
+              Icons.delete,
+              color:
+                  selectedFiles.isNotEmpty ? Colors.blue.shade700 : Colors.grey,
+            ),
             onPressed: selectedFiles.isNotEmpty
                 ? () async {
-                    await deleteSelectedFiles(ref);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Archivos eliminados')),
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Confirmar eliminación'),
+                        content: Text(
+                            '¿Estás seguro de eliminar ${selectedFiles.length} archivos?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Cancelar'),
+                          ),
+                          FilledButton(
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              await deleteSelectedFiles(ref);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content:
+                                      Text('Archivos eliminados correctamente'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                              refreshData();
+                            },
+                            child: const Text('Eliminar'),
+                          ),
+                        ],
+                      ),
                     );
-                    refreshData();
                   }
                 : null,
+            tooltip: 'Eliminar seleccionados',
           ),
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () async {
-          refreshData();
-        },
+        onRefresh: () async => refreshData(),
         child: relevantExcelFiles.when(
           data: (relevantFiles) {
             if (relevantFiles.isEmpty) {
-              return const Center(child: Text('No hay archivos Excel para este carro'));
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.assignment_outlined,
+                        size: 100, color: Colors.grey),
+                    const SizedBox(height: 16),
+                    Text(
+                      'No hay preoperacionales',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineSmall
+                          ?.copyWith(color: Colors.grey),
+                    ),
+                    const SizedBox(height: 8),
+                    ElevatedButton.icon(
+                      onPressed: refreshData,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Actualizar'),
+                    ),
+                  ],
+                ),
+              );
             }
-            return ListView.builder(
-              itemCount: relevantFiles.length,
-              itemBuilder: (context, index) {
-                final fileInfo = relevantFiles[index];
-                final isSelected = selectedFiles.contains(fileInfo['fileName']);
-                return ListTile(
-                  leading: Checkbox(
-                    value: isSelected,
-                    onChanged: (bool? value) {
-                      ref.read(selectedFilesProvider.notifier).toggleSelection(fileInfo['fileName']);
-                    },
-                  ),
-                  title: Text(fileInfo['userName']),
-                  subtitle: Row(
-                    children: [
-                      Text(_formatDate(fileInfo['finalDate'], fileInfo['initDate'])),
-                      const SizedBox(width: 10),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: fileInfo['isOpen'] ? Colors.green : Colors.red,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          fileInfo['isOpen'] ? 'Abierto' : 'Cerrado',
-                          style: const TextStyle(color: Colors.white, fontSize: 12),
-                        ),
+
+            return Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.blue.shade50, Colors.white],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.blue.withOpacity(0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.file_download),
-                    onPressed: () async {
-                      final firebaseFile = await _getFirebaseFile(fileInfo['fileName']);
-                      if (firebaseFile != null) {
-                        await _downloadFile(firebaseFile, context);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Error al obtener el archivo')),
-                        );
-                      }
+                  margin: const EdgeInsets.all(16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Total de preoperacionales',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.blue.shade700,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Text(
+                            '${relevantFiles.length}',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue.shade900,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(Icons.check_circle,
+                                      size: 16, color: Colors.blue.shade700),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Abiertos: ${relevantFiles.where((f) => f['isOpen']).length}',
+                                    style: TextStyle(
+                                      color: Colors.blue.shade700,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Icon(Icons.cancel,
+                                      size: 16, color: Colors.blue.shade300),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Cerrados: ${relevantFiles.where((f) => !f['isOpen']).length}',
+                                    style: TextStyle(
+                                      color: Colors.blue.shade300,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: relevantFiles.length,
+                    itemBuilder: (context, index) {
+                      final fileInfo = relevantFiles[index];
+                      final isSelected =
+                          selectedFiles.contains(fileInfo['fileName']);
+                      return Card(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 4),
+                        elevation: 2,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border(
+                              left: BorderSide(
+                                color: fileInfo['isOpen']
+                                    ? Colors.blue
+                                    : Colors.grey,
+                                width: 4,
+                              ),
+                            ),
+                          ),
+                          child: ListTile(
+                            onTap: () {
+                              ref
+                                  .read(selectedFilesProvider.notifier)
+                                  .toggleSelection(fileInfo['fileName']);
+                            },
+                            leading: Checkbox(
+                              value: isSelected,
+                              activeColor: Colors.blue,
+                              onChanged: (bool? value) {
+                                ref
+                                    .read(selectedFilesProvider.notifier)
+                                    .toggleSelection(fileInfo['fileName']);
+                              },
+                            ),
+                            title: Text(
+                              fileInfo['userName'],
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue,
+                              ),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    Icon(Icons.calendar_today,
+                                        size: 14, color: Colors.blue.shade300),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      _formatDate(fileInfo['finalDate'],
+                                          fileInfo['initDate']),
+                                      style: TextStyle(
+                                          color: Colors.blue.shade700),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: fileInfo['isOpen']
+                                        ? Colors.blue.shade50
+                                        : Colors.blue.shade100,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: fileInfo['isOpen']
+                                          ? Colors.blue.shade300
+                                          : Colors.blue.shade400,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        fileInfo['isOpen']
+                                            ? Icons.lock_open
+                                            : Icons.lock_outline,
+                                        size: 12,
+                                        color: fileInfo['isOpen']
+                                            ? Colors.blue.shade400
+                                            : Colors.blue.shade700,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        fileInfo['isOpen']
+                                            ? 'Abierto'
+                                            : 'Cerrado',
+                                        style: TextStyle(
+                                          color: fileInfo['isOpen']
+                                              ? Colors.blue.shade400
+                                              : Colors.blue.shade700,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blue,
+                                    foregroundColor: Colors.white,
+                                    elevation: 2,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 8,
+                                    ),
+                                  ),
+                                  icon:
+                                      const Icon(Icons.file_download, size: 18),
+                                  label: const Text('Descargar'),
+                                  onPressed: () async {
+                                    try {
+                                      // Mostrar indicador de progreso
+                                      showDialog(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        builder: (context) => const Center(
+                                          child: Card(
+                                            child: Padding(
+                                              padding: EdgeInsets.all(16),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  CircularProgressIndicator(
+                                                    valueColor:
+                                                        AlwaysStoppedAnimation<
+                                                            Color>(Colors.blue),
+                                                  ),
+                                                  SizedBox(height: 16),
+                                                  Text(
+                                                      'Descargando archivo...'),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+
+                                      final firebaseFile =
+                                          await _getFirebaseFile(
+                                              fileInfo['fileName']);
+                                      if (firebaseFile != null) {
+                                        Navigator.pop(
+                                            context); // Cerrar el diálogo de progreso
+                                        await _downloadFile(
+                                            firebaseFile, context);
+                                      } else {
+                                        throw Exception(
+                                            'No se pudo obtener el archivo');
+                                      }
+                                    } catch (e) {
+                                      Navigator.pop(
+                                          context); // Cerrar el diálogo de progreso
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text('Error: $e'),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
                     },
                   ),
-                );
-              },
+                ),
+              ],
             );
           },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stack) => Center(child: Text('Error: $error')),
+          loading: () => const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text('Cargando preoperacionales...'),
+              ],
+            ),
+          ),
+          error: (error, stack) => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                const SizedBox(height: 16),
+                Text('Error: $error'),
+                ElevatedButton.icon(
+                  onPressed: refreshData,
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Reintentar'),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -123,7 +441,8 @@ class CarPos extends ConsumerWidget {
 
   Future<FirebaseFile?> _getFirebaseFile(String fileName) async {
     try {
-      final ref = FirebaseStorage.instance.ref().child('preoperacionales/$fileName');
+      final ref =
+          FirebaseStorage.instance.ref().child('preoperacionales/$fileName');
       final url = await ref.getDownloadURL();
       return FirebaseFile(ref: ref, name: fileName, url: url);
     } catch (e) {
