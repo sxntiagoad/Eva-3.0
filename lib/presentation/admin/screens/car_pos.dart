@@ -179,12 +179,12 @@ class CarPos extends ConsumerWidget {
                               Row(
                                 children: [
                                   Icon(Icons.check_circle,
-                                      size: 16, color: Colors.blue.shade700),
+                                      size: 16, color: Colors.green.shade700),
                                   const SizedBox(width: 4),
                                   Text(
                                     'Abiertos: ${relevantFiles.where((f) => f['isOpen']).length}',
                                     style: TextStyle(
-                                      color: Colors.blue.shade700,
+                                      color: Colors.green.shade700,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -193,12 +193,12 @@ class CarPos extends ConsumerWidget {
                               Row(
                                 children: [
                                   Icon(Icons.cancel,
-                                      size: 16, color: Colors.blue.shade300),
+                                      size: 16, color: Colors.red.shade700),
                                   const SizedBox(width: 4),
                                   Text(
                                     'Cerrados: ${relevantFiles.where((f) => !f['isOpen']).length}',
                                     style: TextStyle(
-                                      color: Colors.blue.shade300,
+                                      color: Colors.red.shade700,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -227,8 +227,8 @@ class CarPos extends ConsumerWidget {
                             border: Border(
                               left: BorderSide(
                                 color: fileInfo['isOpen']
-                                    ? Colors.blue
-                                    : Colors.grey,
+                                    ? Colors.green
+                                    : Colors.red,
                                 width: 4,
                               ),
                             ),
@@ -278,13 +278,13 @@ class CarPos extends ConsumerWidget {
                                       horizontal: 8, vertical: 2),
                                   decoration: BoxDecoration(
                                     color: fileInfo['isOpen']
-                                        ? Colors.blue.shade50
-                                        : Colors.blue.shade100,
+                                        ? Colors.green.shade50
+                                        : Colors.red.shade50,
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
                                       color: fileInfo['isOpen']
-                                          ? Colors.blue.shade300
-                                          : Colors.blue.shade400,
+                                          ? Colors.green.shade300
+                                          : Colors.red.shade300,
                                       width: 1,
                                     ),
                                   ),
@@ -297,8 +297,8 @@ class CarPos extends ConsumerWidget {
                                             : Icons.lock_outline,
                                         size: 12,
                                         color: fileInfo['isOpen']
-                                            ? Colors.blue.shade400
-                                            : Colors.blue.shade700,
+                                            ? Colors.green.shade700
+                                            : Colors.red.shade700,
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
@@ -307,8 +307,8 @@ class CarPos extends ConsumerWidget {
                                             : 'Cerrado',
                                         style: TextStyle(
                                           color: fileInfo['isOpen']
-                                              ? Colors.blue.shade400
-                                              : Colors.blue.shade700,
+                                              ? Colors.green.shade700
+                                              : Colors.red.shade700,
                                           fontSize: 12,
                                           fontWeight: FontWeight.bold,
                                         ),
