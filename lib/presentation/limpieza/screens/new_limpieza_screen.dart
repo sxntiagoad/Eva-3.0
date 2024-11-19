@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../widgets/car_selector.dart';
 import '../widgets/list_category.dart';
 import '../../../providers/new_limpieza_provider.dart';
@@ -33,18 +34,8 @@ class NewLimpiezaScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  
-                  // Selector de fecha
-                  SliverToBoxAdapter(
-                    child: Card(
-                      child: Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: DateSelector(),
-                      ),
-                    ),
-                  ),
 
-                  // Espacio entre selectores y lista
+                  // Espacio entre selector y lista
                   SliverToBoxAdapter(child: SizedBox(height: 16)),
                   
                   // Lista de categorías
@@ -63,77 +54,28 @@ class NewLimpiezaScreen extends ConsumerWidget {
   }
 }
 
-// Widget para seleccionar la fecha
-class DateSelector extends ConsumerWidget {
-  const DateSelector({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final limpieza = ref.watch(newLimpiezaProvider);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Fecha',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 8),
-        FilledButton.icon(
-          onPressed: () async {
-            final fecha = await showDatePicker(
-              context: context,
-              initialDate: DateTime.now(),
-              firstDate: DateTime(2000),
-              lastDate: DateTime(2100),
-            );
-            if (fecha != null) {
-              ref.read(newLimpiezaProvider.notifier).updateFecha(
-                    fecha.toIso8601String(),
-                  );
-            }
-          },
-          icon: const Icon(Icons.calendar_today),
-          label: Text(
-            limpieza.fecha.isEmpty
-                ? 'Seleccionar fecha'
-                : _formatDate(limpieza.fecha),
-          ),
-        ),
-      ],
-    );
-  }
-
-  String _formatDate(String isoString) {
-    final date = DateTime.parse(isoString);
-    return '${date.day}/${date.month}/${date.year}';
-  }
-}
-
-// Widget para el botón de guardar
 class SaveButtonLimpieza extends ConsumerWidget {
   const SaveButtonLimpieza({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isValid = ref.watch(isLimpiezaValidProvider);
+    final limpieza = ref.watch(newLimpiezaProvider);
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: FilledButton(
-        onPressed: isValid
-            ? () {
-                // Aquí iría la lógica para guardar la limpieza
+        onPressed: limpieza.carId.isEmpty
+            ? null
+            : () {
+                // Aquí iría la lógica para guardar
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Limpieza guardada correctamente'),
                   ),
                 );
-              }
-            : null,
+                ref.read(newLimpiezaProvider.notifier).reset();
+                context.pop();
+              },
         child: const Text('Guardar Limpieza'),
       ),
     );

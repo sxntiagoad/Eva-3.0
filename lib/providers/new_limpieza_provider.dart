@@ -7,16 +7,12 @@ class LimpiezaNotifier extends StateNotifier<Limpieza> {
   LimpiezaNotifier() 
     : super(Limpieza(
         carId: '', 
-        fecha: '', 
+        fecha: DateTime.now().toIso8601String(), 
         inspecciones: formatInspeccionesLimpieza()
       ));
 
   void updateCarId(String newCarId) {
     state = state.copyWith(carId: newCarId);
-  }
-
-  void updateFecha(String newFecha) {
-    state = state.copyWith(fecha: newFecha);
   }
 
   void updateDayOfWeek(String category, String day, bool? value) {
@@ -43,7 +39,7 @@ class LimpiezaNotifier extends StateNotifier<Limpieza> {
   void reset() {
     state = Limpieza(
       carId: '', 
-      fecha: '', 
+      fecha: DateTime.now().toIso8601String(), 
       inspecciones: formatInspeccionesLimpieza()
     );
   }
@@ -57,5 +53,5 @@ final newLimpiezaProvider = StateNotifierProvider<LimpiezaNotifier, Limpieza>((r
 // Provider simple para validación básica
 final isLimpiezaValidProvider = Provider<bool>((ref) {
   final limpieza = ref.watch(newLimpiezaProvider);
-  return limpieza.carId.isNotEmpty && limpieza.fecha.isNotEmpty;
+  return limpieza.carId.isNotEmpty;
 });
