@@ -3,14 +3,17 @@ import 'package:eva/models/limpieza.dart';
 import 'package:eva/models/week.dart';
 import 'package:eva/presentation/limpieza/services/limpieza_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LimpiezaNotifier extends StateNotifier<Limpieza> {
   final LimpiezaService _limpiezaService = LimpiezaService();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   
   LimpiezaNotifier() 
     : super(Limpieza(
         carId: '', 
-        fecha: DateTime.now().toIso8601String(), 
+        fecha: DateTime.now().toIso8601String(),
+        userId: FirebaseAuth.instance.currentUser?.uid ?? '',
         inspecciones: formatInspeccionesLimpieza()
       ));
 
@@ -42,7 +45,8 @@ class LimpiezaNotifier extends StateNotifier<Limpieza> {
   void reset() {
     state = Limpieza(
       carId: '', 
-      fecha: DateTime.now().toIso8601String(), 
+      fecha: DateTime.now().toIso8601String(),
+      userId: _auth.currentUser?.uid ?? '',
       inspecciones: formatInspeccionesLimpieza()
     );
   }

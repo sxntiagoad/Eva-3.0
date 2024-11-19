@@ -6,24 +6,28 @@ class Limpieza {
   final String docId;
   final String carId;
   final String fecha;
+  final String userId;
   final Map<String, Week> inspecciones;
 
   Limpieza({
     this.docId = '',
     required this.carId,
     required this.fecha,
+    required this.userId,
     required this.inspecciones,
   });
 
   Limpieza copyWith({
     String? carId,
     String? fecha,
+    String? userId,
     Map<String, Week>? inspecciones,
     String? docId,
   }) {
     return Limpieza(
       carId: carId ?? this.carId,
       fecha: fecha ?? this.fecha,
+      userId: userId ?? this.userId,
       inspecciones: inspecciones ?? this.inspecciones,
       docId: docId ?? this.docId,
     );
@@ -33,6 +37,7 @@ class Limpieza {
     return {
       'carro': carId,
       'fecha': fecha,
+      'userId': userId,
       'inspecciones': inspecciones.map(
         (key, value) => MapEntry(key, value.toMap()),
       ),
@@ -43,6 +48,7 @@ class Limpieza {
     return Limpieza(
       carId: map['carro'] ?? '',
       fecha: map['fecha'] ?? '',
+      userId: map['userId'] ?? '',
       inspecciones: (map['inspecciones'] as Map<String, dynamic>).map(
         (key, value) => MapEntry(key, Week.fromMap(value)),
       ),
@@ -56,7 +62,7 @@ class Limpieza {
 
   @override
   String toString() {
-    return 'Limpieza(docId: $docId, carId: $carId, fecha: $fecha, inspecciones: $inspecciones)';
+    return 'Limpieza(docId: $docId, carId: $carId, fecha: $fecha, userId: $userId, inspecciones: $inspecciones)';
   }
 
   @override
@@ -67,6 +73,7 @@ class Limpieza {
         other.docId == docId &&
         other.carId == carId &&
         other.fecha == fecha &&
+        other.userId == userId &&
         mapEquals(other.inspecciones, inspecciones);
   }
 
@@ -75,6 +82,7 @@ class Limpieza {
     return docId.hashCode ^
         carId.hashCode ^
         fecha.hashCode ^
+        userId.hashCode ^
         inspecciones.hashCode;
   }
 }
