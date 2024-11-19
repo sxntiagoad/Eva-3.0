@@ -8,6 +8,7 @@ class Limpieza {
   final String fecha;
   final String userId;
   final Map<String, Week> inspecciones;
+  final bool isOpen;
 
   Limpieza({
     this.docId = '',
@@ -15,6 +16,7 @@ class Limpieza {
     required this.fecha,
     required this.userId,
     required this.inspecciones,
+    this.isOpen = true,
   });
 
   Limpieza copyWith({
@@ -23,6 +25,7 @@ class Limpieza {
     String? userId,
     Map<String, Week>? inspecciones,
     String? docId,
+    bool? isOpen,
   }) {
     return Limpieza(
       carId: carId ?? this.carId,
@@ -30,6 +33,7 @@ class Limpieza {
       userId: userId ?? this.userId,
       inspecciones: inspecciones ?? this.inspecciones,
       docId: docId ?? this.docId,
+      isOpen: isOpen ?? this.isOpen,
     );
   }
 
@@ -41,6 +45,7 @@ class Limpieza {
       'inspecciones': inspecciones.map(
         (key, value) => MapEntry(key, value.toMap()),
       ),
+      'isOpen': isOpen,
     };
   }
 
@@ -52,6 +57,7 @@ class Limpieza {
       inspecciones: (map['inspecciones'] as Map<String, dynamic>).map(
         (key, value) => MapEntry(key, Week.fromMap(value)),
       ),
+      isOpen: map['isOpen'] ?? true,
     );
   }
 

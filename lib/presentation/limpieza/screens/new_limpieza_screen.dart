@@ -12,9 +12,48 @@ class NewLimpiezaScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final limpieza = ref.watch(newLimpiezaProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Nuevo Chequeo de Limpieza'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: IconButton(
+              icon: Icon(
+                limpieza.isOpen 
+                  ? Icons.lock_open_rounded 
+                  : Icons.lock_rounded,
+                color: limpieza.isOpen 
+                  ? Colors.green 
+                  : Colors.red,
+              ),
+              onPressed: () {
+                ref.read(newLimpiezaProvider.notifier).toggleIsOpen();
+                
+                // Mostrar SnackBar según el estado
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      limpieza.isOpen 
+                        ? 'Cerrando chequeo de limpieza...'
+                        : 'Abriendo chequeo de limpieza...',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    backgroundColor: !limpieza.isOpen  // Invertido porque el estado aún no se ha actualizado
+                        ? Colors.green
+                        : Colors.red,
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
       body: const Column(
         children: [
@@ -71,82 +110,113 @@ class SaveButtonLimpiezaState extends ConsumerState<SaveButtonLimpieza> {
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: FilledButton(
-        onPressed: limpieza.carId.isEmpty || isLoading
-            ? null
-            : () async {
-                setState(() {
-                  isLoading = true;
-                });
-                
-                try {
-                  // Mostrar indicador de carga
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Guardando limpieza...'))
-                  );
-
-                  final docId = await ref.read(newLimpiezaProvider.notifier).saveLimpieza() ?? '';
+      child: SizedBox(  // Agregamos SizedBox para controlar el tamaño
+        height: 60,  // Altura del botón
+        child: FilledButton(
+          onPressed: limpieza.carId.isEmpty || isLoading
+              ? null
+              : () async {
+                  setState(() {
+                    isLoading = true;
+                  });
                   
                   try {
-                    await limpiezaDataJson(
-                      ref: ref,
-                      limpieza: ref.read(newLimpiezaProvider),
-                      idDoc: docId,
+                    // Mostrar indicador de carga
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          limpieza.isOpen
+                            ? 'Guardando limpieza como abierta...'
+                            : 'Guardando limpieza como cerrada...',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        backgroundColor: limpieza.isOpen 
+                            ? Colors.green 
+                            : Colors.red,
+                      )
                     );
+
+                    final docId = await ref.read(newLimpiezaProvider.notifier).saveLimpieza() ?? '';
                     
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Limpieza guardada correctamente'))
+                    try {
+                      await limpiezaDataJson(
+                        ref: ref,
+                        limpieza: ref.read(newLimpiezaProvider),
+                        idDoc: docId,
                       );
                       
-                      // Resetear el formulario
-                      ref.read(newLimpiezaProvider.notifier).reset();
-                      
-                      // Navegar hacia atrás
                       if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Limpieza guardada correctamente'),
+                            backgroundColor: Colors.blue,
+                          )
+                        );
+                        
+                        ref.read(newLimpiezaProvider.notifier).reset();
+                        
+                        if (context.mounted) {
+                          context.pop();
+                        }
+                      }
+                    } catch (excelError) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('La limpieza se guardó pero hubo un error al generar el Excel: $excelError'),
+                            backgroundColor: Colors.orange,
+                          )
+                        );
                         context.pop();
                       }
                     }
-                  } catch (excelError) {
-                    // Si falla el Excel, al menos la limpieza se guardó
+                  } catch (e) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('La limpieza se guardó pero hubo un error al generar el Excel: $excelError'),
-                          backgroundColor: Colors.orange,
+                          content: Text('Error al guardar: $e'),
+                          backgroundColor: Colors.red,
                         )
                       );
-                      // Aún así navegamos hacia atrás ya que la limpieza se guardó
-                      context.pop();
+                    }
+                  } finally {
+                    if (mounted) {
+                      setState(() {
+                        isLoading = false;
+                      });
                     }
                   }
-                } catch (e) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Error al guardar: $e'),
-                        backgroundColor: Colors.red,
-                      )
-                    );
-                  }
-                } finally {
-                  if (mounted) {
-                    setState(() {
-                      isLoading = false;
-                    });
-                  }
-                }
-              },
-        child: isLoading 
-          ? const SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator(
-                color: Colors.white,
-                strokeWidth: 2,
+                },
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+              if (states.contains(MaterialState.disabled)) {
+                return Colors.grey;
+              }
+              return limpieza.isOpen ? Colors.green : Colors.red;
+            }),
+          ),
+          child: isLoading 
+            ? const SizedBox(
+                width: 30,  // Indicador de carga más grande
+                height: 30,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 3,  // Línea más gruesa
+                ),
+              )
+            : Text(
+                limpieza.isOpen 
+                  ? 'Guardar Limpieza (Abierta)'
+                  : 'Guardar Limpieza (Cerrada)',
+                style: const TextStyle(
+                  fontSize: 18,  // Texto más grande
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            )
-          : const Text('Guardar Limpieza'),
+        ),
       ),
     );
   }

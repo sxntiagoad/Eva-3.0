@@ -51,8 +51,13 @@ class LimpiezaNotifier extends StateNotifier<Limpieza> {
       fecha: DateFormat('yyyy-MM-dd HH:mm:ss')
           .format(DateTime.now().toLocal()),
       userId: _auth.currentUser?.uid ?? '',
-      inspecciones: formatInspeccionesLimpieza()
+      inspecciones: formatInspeccionesLimpieza(),
+      isOpen: true,
     );
+  }
+
+  void toggleIsOpen() {
+    state = state.copyWith(isOpen: !state.isOpen);
   }
 
   Future<String?> saveLimpieza() async {
