@@ -1,9 +1,11 @@
+import 'package:eva/core/excel/limpieza_generator.dart';
 import 'package:eva/models/format_limpieza.dart';
 import 'package:eva/models/limpieza.dart';
 import 'package:eva/models/week.dart';
 import 'package:eva/presentation/limpieza/services/limpieza_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
 class LimpiezaNotifier extends StateNotifier<Limpieza> {
   final LimpiezaService _limpiezaService = LimpiezaService();
@@ -12,7 +14,8 @@ class LimpiezaNotifier extends StateNotifier<Limpieza> {
   LimpiezaNotifier() 
     : super(Limpieza(
         carId: '', 
-        fecha: DateTime.now().toIso8601String(),
+        fecha: DateFormat('yyyy-MM-dd HH:mm:ss')
+            .format(DateTime.now().toLocal()),
         userId: FirebaseAuth.instance.currentUser?.uid ?? '',
         inspecciones: formatInspeccionesLimpieza()
       ));
@@ -45,13 +48,14 @@ class LimpiezaNotifier extends StateNotifier<Limpieza> {
   void reset() {
     state = Limpieza(
       carId: '', 
-      fecha: DateTime.now().toIso8601String(),
+      fecha: DateFormat('yyyy-MM-dd HH:mm:ss')
+          .format(DateTime.now().toLocal()),
       userId: _auth.currentUser?.uid ?? '',
       inspecciones: formatInspeccionesLimpieza()
     );
   }
 
-  Future<String> saveLimpieza() async {
+  Future<String?> saveLimpieza() async {
     try {
       final docId = await _limpiezaService.saveLimpieza(state);
       state = state.copyWith(docId: docId);
@@ -74,6 +78,7 @@ final isLimpiezaValidProvider = Provider<bool>((ref) {
 });
 
 // Agregar provider para el estado de guardado
-final saveLimpiezaProvider = FutureProvider.autoDispose<String>((ref) {
-  throw UnimplementedError();
+final saveLimpiezaProvider = FutureProvider.autoDispose<String>((ref) async {
+  final limpieza = ref.read(newLimpiezaProvider.notifier);
+  return await limpieza.saveLimpieza() ?? '';
 });
