@@ -60,23 +60,50 @@ class SaveButtonLimpieza extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final limpieza = ref.watch(newLimpiezaProvider);
+    final isSaving = ref.watch(saveLimpiezaProvider).isLoading;
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: FilledButton(
-        onPressed: limpieza.carId.isEmpty
+        onPressed: limpieza.carId.isEmpty || isSaving
             ? null
-            : () {
-                // Aquí iría la lógica para guardar
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Limpieza guardada correctamente'),
-                  ),
-                );
-                ref.read(newLimpiezaProvider.notifier).reset();
-                context.pop();
+            : () async {
+                try {
+                  // Mostrar indicador de carga
+                  ref.read(saveLimpiezaProvider);
+                  
+                  // Guardar en Firebase
+                  await ref.read(newLimpiezaProvider.notifier).saveLimpieza();
+                  
+                  if (context.mounted) {
+                    // Mostrar mensaje de éxito
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Limpieza guardada correctamente'),
+                      ),
+                    );
+                    
+                    // Resetear el formulario
+                    ref.read(newLimpiezaProvider.notifier).reset();
+                    
+                    // Volver atrás
+                    context.pop();
+                  }
+                } catch (e) {
+                  // Mostrar error
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Error al guardar: ${e.toString()}'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
               },
-        child: const Text('Guardar Limpieza'),
+        child: isSaving 
+          ? const CircularProgressIndicator(color: Colors.white)
+          : const Text('Guardar Limpieza'),
       ),
     );
   }

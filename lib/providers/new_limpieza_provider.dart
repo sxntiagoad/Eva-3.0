@@ -1,9 +1,12 @@
 import 'package:eva/models/format_limpieza.dart';
 import 'package:eva/models/limpieza.dart';
 import 'package:eva/models/week.dart';
+import 'package:eva/presentation/limpieza/services/limpieza_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LimpiezaNotifier extends StateNotifier<Limpieza> {
+  final LimpiezaService _limpiezaService = LimpiezaService();
+  
   LimpiezaNotifier() 
     : super(Limpieza(
         carId: '', 
@@ -43,6 +46,16 @@ class LimpiezaNotifier extends StateNotifier<Limpieza> {
       inspecciones: formatInspeccionesLimpieza()
     );
   }
+
+  Future<String> saveLimpieza() async {
+    try {
+      final docId = await _limpiezaService.saveLimpieza(state);
+      state = state.copyWith(docId: docId);
+      return docId;
+    } catch (e) {
+      throw Exception('Error al guardar limpieza: $e');
+    }
+  }
 }
 
 // Provider global
@@ -54,4 +67,9 @@ final newLimpiezaProvider = StateNotifierProvider<LimpiezaNotifier, Limpieza>((r
 final isLimpiezaValidProvider = Provider<bool>((ref) {
   final limpieza = ref.watch(newLimpiezaProvider);
   return limpieza.carId.isNotEmpty;
+});
+
+// Agregar provider para el estado de guardado
+final saveLimpiezaProvider = FutureProvider.autoDispose<String>((ref) {
+  throw UnimplementedError();
 });
