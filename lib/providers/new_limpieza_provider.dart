@@ -4,13 +4,29 @@ import 'package:eva/models/week.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LimpiezaNotifier extends StateNotifier<Limpieza> {
-  LimpiezaNotifier() : super(Limpieza(carId: '', fecha: '', inspecciones: formatInspeccionesLimpieza()));
+  LimpiezaNotifier() 
+    : super(Limpieza(
+        carId: '', 
+        fecha: '', 
+        inspecciones: formatInspeccionesLimpieza()
+      ));
 
-  void updateDayOfWeek(String category, String day, bool? value){
+  void updateCarId(String newCarId) {
+    state = state.copyWith(carId: newCarId);
+  }
+
+  void updateFecha(String newFecha) {
+    state = state.copyWith(fecha: newFecha);
+  }
+
+  void updateDayOfWeek(String category, String day, bool? value) {
     final updatedInspecciones = Map<String, Week>.from(state.inspecciones);
-    if (updatedInspecciones.containsKey(category)){
+    
+    if (updatedInspecciones.containsKey(category)) {
       final currentWeek = updatedInspecciones[category]!;
-      final updatedWeek = currentWeek.copyWith(lunes: day == 'Lunes' ? () => value : null,
+      
+      final updatedWeek = currentWeek.copyWith(
+        lunes: day == 'Lunes' ? () => value : null,
         martes: day == 'Martes' ? () => value : null,
         miercoles: day == 'Miercoles' ? () => value : null,
         jueves: day == 'Jueves' ? () => value : null,
@@ -18,11 +34,28 @@ class LimpiezaNotifier extends StateNotifier<Limpieza> {
         sabado: day == 'Sabado' ? () => value : null,
         domingo: day == 'Domingo' ? () => value : null,
       );
-       // Actualiza el mapa con el nuevo Week
-        updatedInspecciones[category] = updatedWeek;
-        // Actualiza el estado completo con el nuevo mapa de inspecciones
-        state = state.copyWith(inspecciones: updatedInspecciones);
 
+      updatedInspecciones[category] = updatedWeek;
+      state = state.copyWith(inspecciones: updatedInspecciones);
     }
   }
+
+  void reset() {
+    state = Limpieza(
+      carId: '', 
+      fecha: '', 
+      inspecciones: formatInspeccionesLimpieza()
+    );
+  }
 }
+
+// Provider global
+final newLimpiezaProvider = StateNotifierProvider<LimpiezaNotifier, Limpieza>((ref) {
+  return LimpiezaNotifier();
+});
+
+// Provider simple para validación básica
+final isLimpiezaValidProvider = Provider<bool>((ref) {
+  final limpieza = ref.watch(newLimpiezaProvider);
+  return limpieza.carId.isNotEmpty && limpieza.fecha.isNotEmpty;
+});

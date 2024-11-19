@@ -1,7 +1,7 @@
 import 'package:eva/presentation/admin/screens/admin_panel_screen.dart';
 import 'package:eva/presentation/admin/screens/car_management_page.dart';
 import 'package:go_router/go_router.dart';
-
+import '../../presentation/limpieza/screens/new_limpieza_screen.dart';
 import '../../models/preoperacional.dart';
 import '../../presentation/forgot_password/screens/forgot_password_screen.dart';
 import '../../presentation/home/screens/home_screen.dart';
@@ -84,6 +84,10 @@ final appRouter = GoRouter(
       name: CarManagementPage.name,
       builder: (context, state) => const CarManagementPage(),
     ),
-
+    GoRoute(
+      path: '/${NewLimpiezaScreen.name}',
+      name: NewLimpiezaScreen.name,
+      builder: (context, state) => const NewLimpiezaScreen(),
+    ),
   ],
 );

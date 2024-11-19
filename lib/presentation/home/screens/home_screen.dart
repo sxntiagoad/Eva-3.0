@@ -1,3 +1,4 @@
+import 'package:eva/presentation/limpieza/screens/new_limpieza_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -186,11 +187,11 @@ class _DashboardGrid extends StatelessWidget {
               isWebPlatform: isWebPlatform,
             ),
             _DashboardCard(
-              title: 'Estadísticas',
-              subtitle: 'Ver reportes',
-              icon: Icons.bar_chart,
+              title: 'Nuevo Chequeo\nde Limpieza',
+              subtitle: 'Registro de chequeo',
+              icon: Icons.cleaning_services,  // Icono de limpieza
               color: AppTheme.mainColor,
-              onTap: () {},
+              onTap: () => context.pushNamed(NewLimpiezaScreen.name),
               isWebPlatform: isWebPlatform,
             ),
             _DashboardCard(
