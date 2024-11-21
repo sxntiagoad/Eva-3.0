@@ -1,53 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../providers/new_limpieza_provider.dart';
 
-class DayWeek extends ConsumerWidget {
-  final String category;
-  final String day;
-  final String dayValue;
-  final bool? isMarked;
+class DayWeek extends StatelessWidget {
+  final String label;
+  final String dayName;
+  final bool? value;
+  final Function(String, bool?)? onChange;
 
   const DayWeek({
-    required this.category,
-    required this.day,
-    required this.dayValue,
-    required this.isMarked,
+    required this.label,
+    required this.dayName,
+    this.value,
+    this.onChange,
     super.key,
   });
 
+  void _handleTap() {
+    if (onChange == null) return;
+    
+    final nextValue = value == null ? true : value == true ? false : null;
+    onChange!(dayName, nextValue);
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return GestureDetector(
-      onTap: () {
-        ref.read(newLimpiezaProvider.notifier).updateDayOfWeek(
-              category,
-              dayValue,
-              nextBoolDay(isMarked),
-            );
-      },
-      child: CircleAvatar(
-        radius: 18,
-        backgroundColor: _colorDay(isMarked),
-        child: Text(
-          day,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: _handleTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: value == null ? Colors.grey.shade400 
+                : value! ? Colors.green 
+                : Colors.red,
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
     );
   }
-}
-
-bool? nextBoolDay(bool? dayBool) {
-  if (dayBool == null) return true;
-  if (dayBool == true) return false;
-  return null;
-}
-
-Color _colorDay(bool? day) {
-  if (day == null) return Colors.grey;
-  return day ? Colors.green : Colors.red;
 }

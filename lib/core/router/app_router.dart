@@ -13,6 +13,9 @@ import '../../presentation/preoperacional/screens/preoperacional_screen.dart';
 import '../../presentation/register/screens/register_screen.dart';
 import '../../presentation/user_data/screens/user_data_screen.dart';
 import '../../presentation/admin/screens/admin_cars.dart';
+import '../../presentation/limpieza/screens/limpiezas_screen.dart';
+import '../../presentation/limpieza/screens/edit_limpieza_screen.dart';
+import '../../models/limpieza.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/${IsAuthenticated.name}',
@@ -88,6 +91,21 @@ final appRouter = GoRouter(
       path: '/${NewLimpiezaScreen.name}',
       name: NewLimpiezaScreen.name,
       builder: (context, state) => const NewLimpiezaScreen(),
+    ),
+    GoRoute(
+      path: '/${LimpiezasScreen.name}',
+      name: LimpiezasScreen.name,
+      builder: (context, state) => const LimpiezasScreen(),
+    ),
+    GoRoute(
+      path: '/${EditLimpiezaScreen.name}',
+      name: EditLimpiezaScreen.name,
+      builder: (context, state) {
+        final limpieza = state.extra as Limpieza;
+        return EditLimpiezaScreen(
+          limpieza: limpieza,
+        );
+      },
     ),
   ],
 );

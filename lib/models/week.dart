@@ -42,25 +42,25 @@ class Week {
 
   Map<String, dynamic> toMap() {
     return {
-      'Lunes': lunes,
-      'Martes': martes,
-      'Miercoles': miercoles,
-      'Jueves': jueves,
-      'Viernes': viernes,
-      'Sabado': sabado,
-      'Domingo': domingo,
+      'lunes': lunes,
+      'martes': martes,
+      'miercoles': miercoles,
+      'jueves': jueves,
+      'viernes': viernes,
+      'sabado': sabado,
+      'domingo': domingo,
     };
   }
 
   factory Week.fromMap(Map<String, dynamic> map) {
     return Week(
-      lunes: map['Lunes'],
-      martes: map['Martes'],
-      miercoles: map['Miercoles'],
-      jueves: map['Jueves'],
-      viernes: map['Viernes'],
-      sabado: map['Sabado'],
-      domingo: map['Domingo'],
+      lunes: map['lunes'] ?? map['Lunes'],
+      martes: map['martes'] ?? map['Martes'],
+      miercoles: map['miercoles'] ?? map['Miercoles'],
+      jueves: map['jueves'] ?? map['Jueves'],
+      viernes: map['viernes'] ?? map['Viernes'],
+      sabado: map['sabado'] ?? map['Sabado'],
+      domingo: map['domingo'] ?? map['Domingo'],
     );
   }
 
