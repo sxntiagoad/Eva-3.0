@@ -2,7 +2,6 @@ import 'package:eva/presentation/limpieza/screens/new_limpieza_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import '../../../core/theme/app_theme.dart';
 import '../../../providers/current_user_provider.dart';
 import '../../list_preoperacionales.dart/screens/list_preoperacionales_screen.dart';
@@ -199,7 +198,7 @@ class _DashboardGrid extends StatelessWidget {
               subtitle: 'Registros anteriores',
               icon: Icons.history,
               color: AppTheme.mainColor,
-              onTap: () {},
+              onTap: () => context.pushNamed('limpiezas-screen'),
               isWebPlatform: isWebPlatform,
             ),
           ],

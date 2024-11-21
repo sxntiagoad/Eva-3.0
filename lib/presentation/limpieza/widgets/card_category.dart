@@ -1,37 +1,39 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
 import '../../../models/week.dart';
 import 'category_item.dart';
 
 class CardCategory extends StatelessWidget {
-  final Map<String, Week> inspecciones;
-  
+  final Map<String, Week> categories;
+  final Map<String, String> instructions;
+  final Function(String, String, bool?)? onDayUpdate;
+
   const CardCategory({
-    required this.inspecciones,
+    required this.categories,
+    required this.instructions,
+    this.onDayUpdate,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 5),
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: AppTheme.mainColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ...inspecciones.entries.map(
-            (entry) => CategoryItem(
-              category: entry.key,
-              week: entry.value,
-            ),
-          ),
-        ],
-      ),
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: categories.length,
+      itemBuilder: (context, index) {
+        final category = categories.keys.elementAt(index);
+        final weekData = categories[category]!;
+        final instruction = instructions[category] ?? '';
+
+        return CategoryItem(
+          title: category,
+          instruction: instruction,
+          weekData: weekData,
+          onDayChange: onDayUpdate != null 
+            ? (day, value) => onDayUpdate!(category, day, value)
+            : null,
+        );
+      },
     );
   }
 }

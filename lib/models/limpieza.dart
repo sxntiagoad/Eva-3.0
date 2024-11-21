@@ -51,12 +51,15 @@ class Limpieza {
 
   factory Limpieza.fromMap(Map<String, dynamic> map) {
     return Limpieza(
+      docId: map['docId'] ?? '',
       carId: map['carro'] ?? '',
       fecha: map['fecha'] ?? '',
       userId: map['userId'] ?? '',
-      inspecciones: (map['inspecciones'] as Map<String, dynamic>).map(
-        (key, value) => MapEntry(key, Week.fromMap(value)),
-      ),
+      inspecciones: map['inspecciones'] != null 
+          ? (map['inspecciones'] as Map<String, dynamic>).map(
+              (key, value) => MapEntry(key, Week.fromMap(value as Map<String, dynamic>)),
+            )
+          : {},
       isOpen: map['isOpen'] ?? true,
     );
   }
