@@ -194,8 +194,8 @@ class _DashboardGrid extends StatelessWidget {
               isWebPlatform: isWebPlatform,
             ),
             _DashboardCard(
-              title: 'Historial',
-              subtitle: 'Registros anteriores',
+              title: 'Historial de Limpiezas',
+              subtitle: 'Ver registros anteriores',
               icon: Icons.history,
               color: AppTheme.mainColor,
               onTap: () => context.pushNamed('limpiezas-screen'),
