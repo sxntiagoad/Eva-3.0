@@ -1,5 +1,5 @@
 import 'package:eva/providers/car_provider.dart';
-import 'package:eva/providers/new_limpieza_provider.dart';
+import 'package:eva/providers/limpieza/new_limpieza_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

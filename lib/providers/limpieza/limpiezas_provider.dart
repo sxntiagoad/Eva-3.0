@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/limpieza.dart';
+import '../../models/limpieza.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 final openLimpiezasProvider = StreamProvider<List<Limpieza>>((ref) {

@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../widgets/car_selector.dart';
 import '../widgets/list_category.dart';
-import '../../../providers/new_limpieza_provider.dart';
+import '../../../providers/limpieza/new_limpieza_provider.dart';
 
 class NewLimpiezaScreen extends ConsumerWidget {
   static const name = 'new-limpieza-screen';

@@ -1,7 +1,7 @@
 import 'package:eva/models/limpieza.dart';
 import 'package:eva/providers/car_provider.dart';
 import 'package:eva/providers/current_user_provider.dart';
-import 'package:eva/providers/limpieza_endpoint.dart';
+import 'package:eva/providers/limpieza/limpieza_endpoint.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

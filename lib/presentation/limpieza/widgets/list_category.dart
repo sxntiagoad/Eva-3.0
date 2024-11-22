@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../models/week.dart';
-import '../../../providers/new_limpieza_provider.dart';
+import '../../../providers/limpieza/new_limpieza_provider.dart';
 import 'category_item.dart';
 
 class ListCategory extends ConsumerWidget {

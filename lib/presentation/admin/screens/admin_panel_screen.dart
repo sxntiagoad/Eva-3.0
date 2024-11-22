@@ -1,9 +1,10 @@
-import 'package:eva/presentation/admin/screens/car_management_page.dart';
+import 'package:eva/presentation/admin/screens/cars/car_management_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
-import './admin_cars.dart'; // Asegúrate de importar la clase AdminCars
+import 'preoperacionales/admin_cars.dart'; // Asegúrate de importar la clase AdminCars
+import 'limpiezas/admin_limpiezas.dart';
 
 class AdminPanelScreen extends ConsumerWidget {
   static const String name = 'admin-panel';
@@ -73,6 +74,15 @@ class AdminPanelScreen extends ConsumerWidget {
                       route: CarManagementPage.name,
                       isDesktop: true,
                     )),
+                    const SizedBox(width: 24),
+                    Expanded(child: _buildOptionCard(
+                      context: context,
+                      title: 'Limpiezas',
+                      description: 'Gestiona los registros de limpieza de vehículos',
+                      icon: Icons.cleaning_services_outlined,
+                      route: AdminLimpiezas.name,
+                      isDesktop: true,
+                    )),
                   ],
                 )
               else
@@ -93,6 +103,15 @@ class AdminPanelScreen extends ConsumerWidget {
                       description: 'Administra la flota de vehículos',
                       icon: Icons.directions_car_outlined,
                       route: CarManagementPage.name,
+                      isDesktop: false,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildOptionCard(
+                      context: context,
+                      title: 'Limpiezas',
+                      description: 'Gestiona los registros de limpieza de vehículos',
+                      icon: Icons.cleaning_services_outlined,
+                      route: AdminLimpiezas.name,
                       isDesktop: false,
                     ),
                   ],

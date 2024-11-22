@@ -2,8 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/limpieza.dart';
-import '../models/week.dart';
+import '../../models/limpieza.dart';
+import '../../models/week.dart';
 
 class LimpiezaDbNotifier extends StateNotifier<Limpieza> {
   LimpiezaDbNotifier()

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../providers/limpiezas_provider.dart';
+import '../../../providers/limpieza/limpiezas_provider.dart';
 import '../widgets/limpiezas_card.dart';
 
 class LimpiezasScreen extends ConsumerWidget {

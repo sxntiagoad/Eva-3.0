@@ -65,7 +65,7 @@ class Preoperacional {
 
   Map<String, dynamic> toMap() {
     return {
-      'carro': carId,
+      'carId': carId,
       'fecha': fecha,
       'inspecciones': inspecciones.map(
         (key, value) => MapEntry(
@@ -91,7 +91,7 @@ class Preoperacional {
 
   factory Preoperacional.fromMap(Map<String, dynamic> map) {
     return Preoperacional(
-      carId: map['carro'] ?? '',
+      carId: map['carId'] ?? '',
       fecha: map['fecha'] ?? '',
       inspecciones: (map['inspecciones'] as Map<String, dynamic>).map(
         (key, value) => MapEntry(

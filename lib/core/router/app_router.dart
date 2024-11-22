@@ -1,5 +1,6 @@
+import 'package:eva/presentation/admin/screens/limpiezas/admin_limpiezas.dart';
 import 'package:eva/presentation/admin/screens/admin_panel_screen.dart';
-import 'package:eva/presentation/admin/screens/car_management_page.dart';
+import 'package:eva/presentation/admin/screens/cars/car_management_page.dart';
 import 'package:go_router/go_router.dart';
 import '../../presentation/limpieza/screens/new_limpieza_screen.dart';
 import '../../models/preoperacional.dart';
@@ -12,7 +13,7 @@ import '../../presentation/new_preoperacional/screens/new_preoperacional_scree.d
 import '../../presentation/preoperacional/screens/preoperacional_screen.dart';
 import '../../presentation/register/screens/register_screen.dart';
 import '../../presentation/user_data/screens/user_data_screen.dart';
-import '../../presentation/admin/screens/admin_cars.dart';
+import '../../presentation/admin/screens/preoperacionales/admin_cars.dart';
 import '../../presentation/limpieza/screens/limpiezas_screen.dart';
 import '../../presentation/limpieza/screens/edit_limpieza_screen.dart';
 import '../../models/limpieza.dart';
@@ -107,5 +108,10 @@ final appRouter = GoRouter(
         );
       },
     ),
+    GoRoute(
+      path: '/${AdminLimpiezas.name}',
+      name: AdminLimpiezas.name,
+      builder: (context, state) => const AdminLimpiezas(),
+    )
   ],
 );

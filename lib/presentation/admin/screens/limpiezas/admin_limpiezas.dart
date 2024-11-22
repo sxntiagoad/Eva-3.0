@@ -1,13 +1,13 @@
-import 'package:eva/models/car.dart';
+import 'package:eva/presentation/admin/screens/limpiezas/car_limpieza.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:eva/models/car.dart';
 import 'package:eva/providers/car_provider.dart';
-import 'package:eva/presentation/admin/screens/car_pos.dart';
 
-class AdminCars extends ConsumerWidget {
-  static const String name = 'admin-cars';
+class AdminLimpiezas extends ConsumerWidget {
+  static const String name = 'admin-limpiezas';
 
-  const AdminCars({super.key});
+  const AdminLimpiezas({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,7 +18,7 @@ class AdminCars extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text('Lista de Vehículos'),
+        title: const Text('Gestión de Limpiezas'),
         backgroundColor: Colors.white,
         elevation: 0,
         titleTextStyle: const TextStyle(
@@ -40,7 +40,7 @@ class AdminCars extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Vehículos Activos',
+                    'Registro de Limpiezas',
                     style: TextStyle(
                       fontSize: isDesktop ? 24 : 20,
                       fontWeight: FontWeight.bold,
@@ -59,7 +59,7 @@ class AdminCars extends ConsumerWidget {
                       itemCount: cars.length,
                       itemBuilder: (context, index) {
                         final car = cars[index];
-                        return _CarCard(car: car, isDesktop: isDesktop);
+                        return _LimpiezaCard(car: car, isDesktop: isDesktop);
                       },
                     ),
                   ),
@@ -91,11 +91,11 @@ class AdminCars extends ConsumerWidget {
   }
 }
 
-class _CarCard extends StatelessWidget {
+class _LimpiezaCard extends StatelessWidget {
   final Car car;
   final bool isDesktop;
 
-  const _CarCard({
+  const _LimpiezaCard({
     required this.car,
     required this.isDesktop,
   });
@@ -114,7 +114,7 @@ class _CarCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => CarPos(car: car),
+              builder: (context) => CarLimpieza(car: car),
             ),
           );
         },
@@ -128,12 +128,12 @@ class _CarCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.blue.shade50,
+                      color: Colors.green.shade50,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
-                      Icons.directions_car,
-                      color: Colors.blue.shade700,
+                      Icons.cleaning_services,
+                      color: Colors.green.shade700,
                       size: isDesktop ? 24 : 20,
                     ),
                   ),
@@ -171,7 +171,7 @@ class _CarCard extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade700,
+                  color: Colors.green.shade700,
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
@@ -188,7 +188,7 @@ class _CarCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    car.carType,
+                    'Ver registros de limpieza',
                     style: TextStyle(
                       fontSize: isDesktop ? 14 : 12,
                       color: Colors.grey[600],
@@ -196,7 +196,7 @@ class _CarCard extends StatelessWidget {
                   ),
                   Icon(
                     Icons.arrow_forward,
-                    color: Colors.blue.shade700,
+                    color: Colors.green.shade700,
                     size: isDesktop ? 20 : 16,
                   ),
                 ],

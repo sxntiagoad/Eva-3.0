@@ -39,7 +39,7 @@ class Limpieza {
 
   Map<String, dynamic> toMap() {
     return {
-      'carro': carId,
+      'carId': carId,
       'fecha': fecha,
       'userId': userId,
       'inspecciones': inspecciones.map(
@@ -52,7 +52,7 @@ class Limpieza {
   factory Limpieza.fromMap(Map<String, dynamic> map) {
     return Limpieza(
       docId: map['docId'] ?? '',
-      carId: map['carro'] ?? '',
+      carId: map['carId'] ?? '',
       fecha: map['fecha'] ?? '',
       userId: map['userId'] ?? '',
       inspecciones: map['inspecciones'] != null 
