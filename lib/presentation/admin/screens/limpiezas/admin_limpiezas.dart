@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eva/models/car.dart';
 import 'package:eva/providers/car_provider.dart';
 
+final searchQueryProvider = StateProvider<String>((ref) => '');
+
 class AdminLimpiezas extends ConsumerWidget {
   static const String name = 'admin-limpiezas';
 
@@ -12,6 +14,7 @@ class AdminLimpiezas extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final carsAsyncValue = ref.watch(mapCarsProvider);
+    final searchQuery = ref.watch(searchQueryProvider);
     final size = MediaQuery.of(context).size;
     final isDesktop = size.width > 768;
 
@@ -35,10 +38,33 @@ class AdminLimpiezas extends ConsumerWidget {
           padding: EdgeInsets.all(isDesktop ? 32.0 : 16.0),
           child: carsAsyncValue.when(
             data: (carsMap) {
-              final cars = carsMap.values.toList();
+              final cars = carsMap.values
+                  .where((car) => car.carPlate
+                      .toLowerCase()
+                      .contains(searchQuery.toLowerCase()))
+                  .toList();
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: TextField(
+                      onChanged: (value) => ref
+                          .read(searchQueryProvider.notifier)
+                          .update((state) => value),
+                      decoration: InputDecoration(
+                        hintText: 'Buscar por placa...',
+                        prefixIcon: const Icon(Icons.search),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                      ),
+                    ),
+                  ),
                   Text(
                     'Registro de Limpiezas',
                     style: TextStyle(

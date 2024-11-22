@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eva/providers/car_provider.dart';
 import 'package:eva/presentation/admin/screens/preoperacionales/car_pos.dart';
 
+final searchQueryProvider = StateProvider<String>((ref) => '');
+
 class AdminCars extends ConsumerWidget {
   static const String name = 'admin-cars';
 
@@ -12,6 +14,7 @@ class AdminCars extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final carsAsyncValue = ref.watch(mapCarsProvider);
+    final searchQuery = ref.watch(searchQueryProvider);
     final size = MediaQuery.of(context).size;
     final isDesktop = size.width > 768;
 
@@ -35,7 +38,11 @@ class AdminCars extends ConsumerWidget {
           padding: EdgeInsets.all(isDesktop ? 32.0 : 16.0),
           child: carsAsyncValue.when(
             data: (carsMap) {
-              final cars = carsMap.values.toList();
+              final cars = carsMap.values
+                  .where((car) => car.carPlate
+                      .toLowerCase()
+                      .contains(searchQuery.toLowerCase()))
+                  .toList();
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -45,6 +52,30 @@ class AdminCars extends ConsumerWidget {
                       fontSize: isDesktop ? 24 : 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    onChanged: (value) => ref
+                        .read(searchQueryProvider.notifier)
+                        .update((state) => value),
+                    decoration: InputDecoration(
+                      hintText: 'Buscar por placa...',
+                      prefixIcon: const Icon(Icons.search),
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey.shade200),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey.shade200),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),

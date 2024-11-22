@@ -7,6 +7,8 @@ import 'package:eva/core/theme/app_theme.dart';
 import 'add_car_page.dart';
 import 'edit_car_page.dart';
 
+final searchQueryProvider = StateProvider<String>((ref) => '');
+
 class CarManagementPage extends ConsumerWidget {
   static const String name = 'car-management';
   const CarManagementPage({super.key});
@@ -108,6 +110,30 @@ class CarManagementPage extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
+                Card(
+                  elevation: 0,
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: TextField(
+                      onChanged: (value) => ref
+                          .read(searchQueryProvider.notifier)
+                          .update((state) => value),
+                      decoration: InputDecoration(
+                        hintText: 'Buscar por placa...',
+                        prefixIcon: const Icon(Icons.search),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
                 Expanded(
                   child: Card(
                     elevation: 0,
@@ -131,6 +157,8 @@ class _CarGrid extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final searchQuery = ref.watch(searchQueryProvider);
+
     return FutureBuilder<QuerySnapshot>(
       future: FirebaseFirestore.instance.collection('cars').get(),
       builder: (context, snapshot) {
@@ -142,7 +170,12 @@ class _CarGrid extends ConsumerWidget {
           return Center(child: Text('Error: ${snapshot.error}'));
         }
 
-        final cars = snapshot.data?.docs ?? [];
+        final allCars = snapshot.data?.docs ?? [];
+        final filteredCars = allCars.where((doc) {
+          final carData = doc.data() as Map<String, dynamic>;
+          final car = Car.fromMap(carData);
+          return car.carPlate.toLowerCase().contains(searchQuery.toLowerCase());
+        }).toList();
 
         return GridView.builder(
           padding: EdgeInsets.all(isDesktop ? 24 : 16),
@@ -152,9 +185,9 @@ class _CarGrid extends ConsumerWidget {
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
           ),
-          itemCount: cars.length,
+          itemCount: filteredCars.length,
           itemBuilder: (context, index) => _CarCard(
-            carDoc: cars[index],
+            carDoc: filteredCars[index],
             isDesktop: isDesktop,
           ),
         );
