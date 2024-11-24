@@ -27,58 +27,29 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      ),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return MaterialApp(
-            title: 'EVA',
-            home: Scaffold(
-              body: Center(
-                child: Text('Error: ${snapshot.error}'),
-              ),
-            ),
-          );
-        }
-
-        if (snapshot.connectionState == ConnectionState.done) {
-          return ProviderScope(
-            child: kIsWeb 
-                ? MaterialApp.router(
+    return ProviderScope(
+      child: kIsWeb 
+          ? MaterialApp.router(
+              routerConfig: appRouter,
+              title: 'EVA',
+              theme: AppTheme().getThemeData(),
+              debugShowCheckedModeBanner: false,
+            )
+          : Platform.isAndroid || Platform.isIOS
+              ? UpdaterWrapper(
+                  child: MaterialApp.router(
                     routerConfig: appRouter,
                     title: 'EVA',
                     theme: AppTheme().getThemeData(),
                     debugShowCheckedModeBanner: false,
-                  )
-                : Platform.isAndroid || Platform.isIOS
-                    ? UpdaterWrapper(
-                        child: MaterialApp.router(
-                          routerConfig: appRouter,
-                          title: 'EVA',
-                          theme: AppTheme().getThemeData(),
-                          debugShowCheckedModeBanner: false,
-                        ),
-                      )
-                    : MaterialApp.router(
-                        routerConfig: appRouter,
-                        title: 'EVA',
-                        theme: AppTheme().getThemeData(),
-                        debugShowCheckedModeBanner: false,
-                      ),
-          );
-        }
-
-        return const MaterialApp(
-          title: 'EVA',
-          home: Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          ),
-        );
-      },
+                  ),
+                )
+              : MaterialApp.router(
+                  routerConfig: appRouter,
+                  title: 'EVA',
+                  theme: AppTheme().getThemeData(),
+                  debugShowCheckedModeBanner: false,
+                ),
     );
   }
 }
