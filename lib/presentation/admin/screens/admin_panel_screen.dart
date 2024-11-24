@@ -55,35 +55,48 @@ class AdminPanelScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 32),
               if (isDesktop)
-                Row(
-                  children: [
-                    Expanded(child: _buildOptionCard(
-                      context: context,
-                      title: 'Preoperacionales',
-                      description: 'Gestiona los preoperacionales de los vehículos',
-                      icon: Icons.assignment_outlined,
-                      route: AdminCars.name,
-                      isDesktop: true,
-                    )),
-                    const SizedBox(width: 24),
-                    Expanded(child: _buildOptionCard(
-                      context: context,
-                      title: 'Gestionar Carros',
-                      description: 'Administra la flota de vehículos',
-                      icon: Icons.directions_car_outlined,
-                      route: CarManagementPage.name,
-                      isDesktop: true,
-                    )),
-                    const SizedBox(width: 24),
-                    Expanded(child: _buildOptionCard(
-                      context: context,
-                      title: 'Limpiezas',
-                      description: 'Gestiona los registros de limpieza de vehículos',
-                      icon: Icons.cleaning_services_outlined,
-                      route: AdminLimpiezas.name,
-                      isDesktop: true,
-                    )),
-                  ],
+                SizedBox(
+                  height: 300,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      SizedBox(
+                        width: 300,
+                        child: _buildOptionCard(
+                          context: context,
+                          title: 'Preoperacionales',
+                          description: 'Gestiona los preoperacionales de los vehículos',
+                          icon: Icons.assignment_outlined,
+                          route: AdminCars.name,
+                          isDesktop: true,
+                        ),
+                      ),
+                      const SizedBox(width: 24),
+                      SizedBox(
+                        width: 300,
+                        child: _buildOptionCard(
+                          context: context,
+                          title: 'Gestionar Carros',
+                          description: 'Administra la flota de vehículos',
+                          icon: Icons.directions_car_outlined,
+                          route: CarManagementPage.name,
+                          isDesktop: true,
+                        ),
+                      ),
+                      const SizedBox(width: 24),
+                      SizedBox(
+                        width: 300,
+                        child: _buildOptionCard(
+                          context: context,
+                          title: 'Limpiezas',
+                          description: 'Gestiona los registros de limpieza de vehículos',
+                          icon: Icons.cleaning_services_outlined,
+                          route: AdminLimpiezas.name,
+                          isDesktop: true,
+                        ),
+                      ),
+                    ],
+                  ),
                 )
               else
                 Column(
