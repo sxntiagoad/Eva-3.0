@@ -2,6 +2,7 @@ import 'package:eva/presentation/limpieza/screens/new_limpieza_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../providers/current_user_provider.dart';
 import '../../list_preoperacionales.dart/screens/list_preoperacionales_screen.dart';
@@ -26,119 +27,140 @@ class HomeScreen extends ConsumerWidget {
           key: scaffoldKey,
           backgroundColor: colors.surface,
           drawer: isWebPlatform ? null : CutomDrawer(scaffoldKey),
-          body: Row(
+          body: Stack(
             children: [
-              if (isWebPlatform)
-                Container(
-                  width: 280,
-                  decoration: BoxDecoration(
-                    color: colors.surface,
-                    boxShadow: [
-                      BoxShadow(
-                        color: colors.shadow.withOpacity(0.05),
-                        blurRadius: 10,
+              Row(
+                children: [
+                  if (isWebPlatform)
+                    Container(
+                      width: 280,
+                      decoration: BoxDecoration(
+                        color: colors.surface,
+                        boxShadow: [
+                          BoxShadow(
+                            color: colors.shadow.withOpacity(0.05),
+                            blurRadius: 10,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: CutomDrawer(scaffoldKey),
-                ),
-              Expanded(
-                child: CustomScrollView(
-                  slivers: [
-                    SliverAppBar(
-                      backgroundColor: colors.surface,
-                      expandedHeight: isWebPlatform ? 180 : 200,
-                      floating: false,
-                      pinned: true,
-                      automaticallyImplyLeading: !isWebPlatform,
-                      flexibleSpace: FlexibleSpaceBar(
-                        background: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                AppTheme.mainColor.withOpacity(0.05),
-                                colors.surface,
+                      child: CutomDrawer(scaffoldKey),
+                    ),
+                  Expanded(
+                    child: CustomScrollView(
+                      slivers: [
+                        SliverAppBar(
+                          backgroundColor: colors.surface,
+                          expandedHeight: isWebPlatform ? 180 : 200,
+                          floating: false,
+                          pinned: true,
+                          automaticallyImplyLeading: !isWebPlatform,
+                          flexibleSpace: FlexibleSpaceBar(
+                            background: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    AppTheme.mainColor.withOpacity(0.05),
+                                    colors.surface,
+                                  ],
+                                ),
+                                borderRadius: const BorderRadius.vertical(
+                                  bottom: Radius.circular(30),
+                                ),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Hero(
+                                    tag: 'logo-tag',
+                                    child: Container(
+                                      padding: const EdgeInsets.all(3),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: AppTheme.mainColor.withOpacity(0.2),
+                                          width: 2,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: AppTheme.mainColor.withOpacity(0.1),
+                                            blurRadius: 10,
+                                            spreadRadius: 1,
+                                          ),
+                                        ],
+                                      ),
+                                      child: CircleAvatar(
+                                        radius: isWebPlatform ? 35 : 40,
+                                        backgroundImage: const AssetImage('assets/logo_eva.png'),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    'Bienvenido de nuevo,',
+                                    style: TextStyle(
+                                      color: AppTheme.mainColor.withOpacity(0.7),
+                                      fontSize: isWebPlatform ? 14 : 16,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    data.fullName,
+                                    style: TextStyle(
+                                      color: AppTheme.mainColor,
+                                      fontSize: isWebPlatform ? 20 : 24,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SliverPadding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isWebPlatform ? 40 : 20,
+                            vertical: 30,
+                          ),
+                          sliver: SliverToBoxAdapter(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '¿Qué deseas hacer hoy?',
+                                  style: TextStyle(
+                                    fontSize: isWebPlatform ? 26 : 24,
+                                    fontWeight: FontWeight.w600,
+                                    color: colors.onSurface,
+                                  ),
+                                ),
+                                const SizedBox(height: 30),
+                                _DashboardGrid(isWebPlatform: isWebPlatform),
                               ],
                             ),
-                            borderRadius: const BorderRadius.vertical(
-                              bottom: Radius.circular(30),
-                            ),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Hero(
-                                tag: 'logo-tag',
-                                child: Container(
-                                  padding: const EdgeInsets.all(3),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: AppTheme.mainColor.withOpacity(0.2),
-                                      width: 2,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: AppTheme.mainColor.withOpacity(0.1),
-                                        blurRadius: 10,
-                                        spreadRadius: 1,
-                                      ),
-                                    ],
-                                  ),
-                                  child: CircleAvatar(
-                                    radius: isWebPlatform ? 35 : 40,
-                                    backgroundImage: const AssetImage('assets/logo_eva.png'),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                'Bienvenido de nuevo,',
-                                style: TextStyle(
-                                  color: AppTheme.mainColor.withOpacity(0.7),
-                                  fontSize: isWebPlatform ? 14 : 16,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                data.fullName,
-                                style: TextStyle(
-                                  color: AppTheme.mainColor,
-                                  fontSize: isWebPlatform ? 20 : 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                    SliverPadding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: isWebPlatform ? 40 : 20,
-                        vertical: 30,
+                  ),
+                ],
+              ),
+              Positioned(
+                right: 10,
+                bottom: 10,
+                child: FutureBuilder<PackageInfo>(
+                  future: PackageInfo.fromPlatform(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) return const SizedBox.shrink();
+                    return Text(
+                      'v${snapshot.data!.version}',
+                      style: TextStyle(
+                        color: colors.onSurface.withOpacity(0.3),
+                        fontSize: 12,
                       ),
-                      sliver: SliverToBoxAdapter(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '¿Qué deseas hacer hoy?',
-                              style: TextStyle(
-                                fontSize: isWebPlatform ? 26 : 24,
-                                fontWeight: FontWeight.w600,
-                                color: colors.onSurface,
-                              ),
-                            ),
-                            const SizedBox(height: 30),
-                            _DashboardGrid(isWebPlatform: isWebPlatform),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ),
             ],

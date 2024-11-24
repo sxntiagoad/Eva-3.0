@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
@@ -44,21 +45,28 @@ class MyApp extends StatelessWidget {
 
         if (snapshot.connectionState == ConnectionState.done) {
           return ProviderScope(
-            child: Platform.isAndroid || Platform.isIOS
-                ? UpdaterWrapper(
-                    child: MaterialApp.router(
-                      routerConfig: appRouter,
-                      title: 'EVA',
-                      theme: AppTheme().getThemeData(),
-                      debugShowCheckedModeBanner: false,
-                    ),
-                  )
-                : MaterialApp.router(
+            child: kIsWeb 
+                ? MaterialApp.router(
                     routerConfig: appRouter,
                     title: 'EVA',
                     theme: AppTheme().getThemeData(),
                     debugShowCheckedModeBanner: false,
-                  ),
+                  )
+                : Platform.isAndroid || Platform.isIOS
+                    ? UpdaterWrapper(
+                        child: MaterialApp.router(
+                          routerConfig: appRouter,
+                          title: 'EVA',
+                          theme: AppTheme().getThemeData(),
+                          debugShowCheckedModeBanner: false,
+                        ),
+                      )
+                    : MaterialApp.router(
+                        routerConfig: appRouter,
+                        title: 'EVA',
+                        theme: AppTheme().getThemeData(),
+                        debugShowCheckedModeBanner: false,
+                      ),
           );
         }
 
