@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:io' show Platform;
 
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
@@ -43,12 +44,21 @@ class MyApp extends StatelessWidget {
 
         if (snapshot.connectionState == ConnectionState.done) {
           return ProviderScope(
-            child: MaterialApp.router(
-              routerConfig: appRouter,
-              title: 'EVA',
-              theme: AppTheme().getThemeData(),
-              debugShowCheckedModeBanner: false,
-            ),
+            child: Platform.isAndroid || Platform.isIOS
+                ? UpdaterWrapper(
+                    child: MaterialApp.router(
+                      routerConfig: appRouter,
+                      title: 'EVA',
+                      theme: AppTheme().getThemeData(),
+                      debugShowCheckedModeBanner: false,
+                    ),
+                  )
+                : MaterialApp.router(
+                    routerConfig: appRouter,
+                    title: 'EVA',
+                    theme: AppTheme().getThemeData(),
+                    debugShowCheckedModeBanner: false,
+                  ),
           );
         }
 
