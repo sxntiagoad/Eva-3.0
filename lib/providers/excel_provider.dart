@@ -9,11 +9,8 @@ final excelFilesProvider = FutureProvider.autoDispose((ref) async {
   ref.watch(refreshTriggerProvider);
 
   try {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      throw Exception("Usuario no autenticado");
-    }
-    final storageRef = FirebaseStorage.instance.ref().child('preoperacionales/');
+    final storageRef =
+        FirebaseStorage.instance.ref().child('preoperacionales/');
     final ListResult result = await storageRef.listAll();
     return result.items.map((item) => item.name).toList();
   } catch (e) {
@@ -48,7 +45,8 @@ final carByIdProvider =
   if (carId.isEmpty) return null;
 
   try {
-    final doc = await FirebaseFirestore.instance.collection('cars').doc(carId).get();
+    final doc =
+        await FirebaseFirestore.instance.collection('cars').doc(carId).get();
     return doc.exists ? Car.fromMap(doc.data()!) : null;
   } catch (e) {
     return null;
@@ -61,7 +59,8 @@ final userByIdProvider =
   if (userId.isEmpty) return 'Usuario Desconocido';
 
   try {
-    final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    final doc =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
     return (doc.exists && doc.data()!.containsKey('fullName'))
         ? doc.data()!['fullName'] as String
         : 'Usuario Desconocido';
@@ -84,11 +83,12 @@ final relevantExcelFilesProvider = FutureProvider.autoDispose
     await Future.wait(excelFiles.map((file) async {
       try {
         final preoperacionalUid = file.split('.')[0];
-        final preoperacional =
-            await ref.read(preoperacionalByUidProvider(preoperacionalUid).future);
+        final preoperacional = await ref
+            .read(preoperacionalByUidProvider(preoperacionalUid).future);
 
         if (preoperacional != null) {
-          final car = await ref.read(carByIdProvider(preoperacional.carId).future);
+          final car =
+              await ref.read(carByIdProvider(preoperacional.carId).future);
           if (car != null && car.carPlate == carPlate) {
             final userName =
                 await ref.read(userByIdProvider(preoperacional.userId).future);
@@ -138,12 +138,13 @@ final selectedFilesProvider =
   return SelectedFilesNotifier();
 });
 
-final deleteFilesProvider = FutureProvider.autoDispose.family<void, List<String>>(
-    (ref, fileNames) async {
+final deleteFilesProvider = FutureProvider.autoDispose
+    .family<void, List<String>>((ref, fileNames) async {
   if (fileNames.isEmpty) return;
 
   final storageRef = FirebaseStorage.instance.ref().child('preoperacionales/');
-  final firestoreRef = FirebaseFirestore.instance.collection('preoperacionales');
+  final firestoreRef =
+      FirebaseFirestore.instance.collection('preoperacionales');
 
   await Future.wait(fileNames.map((fileName) async {
     try {

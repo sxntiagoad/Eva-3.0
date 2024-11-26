@@ -6,17 +6,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 Future<List<Preoperacional>> getAllPreoperacionales() async {
   try {
     final String userId = FirebaseAuth.instance.currentUser!.uid;
-    //QuerySnapshot<Map<String, dynamic>>
     final querySnapshot = await FirebaseFirestore.instance
         .collection('preoperacionales')
         .where('userId', isEqualTo: userId)
         .where('isOpen', isEqualTo: true)
         .get();
 
-
     List<Preoperacional> preoperacionales = querySnapshot.docs.map((doc) {
       return Preoperacional.fromMap(doc.data()).copyWith(docId: doc.id);
     }).toList();
+
+    preoperacionales.sort((a, b) {
+      final aDate = a.fechaFinal.isNotEmpty ? a.fechaFinal : a.fechaInit;
+      final bDate = b.fechaFinal.isNotEmpty ? b.fechaFinal : b.fechaInit;
+      return bDate.compareTo(aDate);
+    });
 
     return preoperacionales;
   } catch (e) {
