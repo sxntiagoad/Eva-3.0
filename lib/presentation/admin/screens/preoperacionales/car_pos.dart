@@ -332,77 +332,19 @@ class CarPos extends ConsumerWidget {
                                 ),
                               ],
                             ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                ElevatedButton.icon(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blue,
-                                    foregroundColor: Colors.white,
-                                    elevation: 2,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 8,
-                                    ),
-                                  ),
-                                  icon:
-                                      const Icon(Icons.file_download, size: 18),
-                                  label: const Text('Descargar'),
-                                  onPressed: () async {
-                                    try {
-                                      // Mostrar indicador de progreso
-                                      showDialog(
-                                        context: context,
-                                        barrierDismissible: false,
-                                        builder: (context) => const Center(
-                                          child: Card(
-                                            child: Padding(
-                                              padding: EdgeInsets.all(16),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  CircularProgressIndicator(
-                                                    valueColor:
-                                                        AlwaysStoppedAnimation<
-                                                            Color>(Colors.blue),
-                                                  ),
-                                                  SizedBox(height: 16),
-                                                  Text(
-                                                      'Descargando archivo...'),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-
-                                      final firebaseFile =
-                                          await _getFirebaseFile(
-                                              fileInfo['fileName']);
-                                      if (firebaseFile != null) {
-                                        Navigator.pop(
-                                            context); // Cerrar el diálogo de progreso
-                                        await _downloadFile(
-                                            firebaseFile, context);
-                                      } else {
-                                        throw Exception(
-                                            'No se pudo obtener el archivo');
-                                      }
-                                    } catch (e) {
-                                      Navigator.pop(
-                                          context); // Cerrar el diálogo de progreso
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text('Error: $e'),
-                                          backgroundColor: Colors.red,
-                                        ),
-                                      );
-                                    }
-                                  },
-                                ),
-                              ],
-                            ),
+                            trailing: IconButton(
+                    icon: const Icon(Icons.file_download),
+                    onPressed: () async {
+                      final firebaseFile = await _getFirebaseFile(fileInfo['fileName']);
+                      if (firebaseFile != null) {
+                        await _downloadFile(firebaseFile, context);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Error al obtener el archivo')),
+                        );
+                      }
+                    },
+                  ),
                           ),
                         ),
                       );
@@ -455,8 +397,7 @@ class CarPos extends ConsumerWidget {
 
   Future<FirebaseFile?> _getFirebaseFile(String fileName) async {
     try {
-      final ref =
-          FirebaseStorage.instance.ref().child('preoperacionales/$fileName');
+      final ref = FirebaseStorage.instance.ref().child('preoperacionales/$fileName');
       final url = await ref.getDownloadURL();
       return FirebaseFile(ref: ref, name: fileName, url: url);
     } catch (e) {
@@ -467,19 +408,13 @@ class CarPos extends ConsumerWidget {
   Future _downloadFile(FirebaseFile file, BuildContext context) async {
     try {
       await FirebaseApi.downloadFile(file.ref);
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Archivo descargado: ${file.name}')),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Archivo descargado: ${file.name}')),
+      );
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al descargar archivo: $e')),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al descargar archivo: $e')),
+      );
     }
   }
 }

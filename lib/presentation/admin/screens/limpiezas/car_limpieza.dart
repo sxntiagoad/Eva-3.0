@@ -8,14 +8,14 @@ import 'package:eva/providers/firebase_api.dart';
 import 'package:intl/intl.dart';
 
 class CarLimpieza extends ConsumerWidget {
-  
   final Car car;
 
   const CarLimpieza({required this.car, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final relevantExcelFiles = ref.watch(relevantExcelFilesProvider(car.carPlate));
+    final relevantExcelFiles =
+        ref.watch(relevantExcelFilesProvider(car.carPlate));
     final selectedFiles = ref.watch(selectedFilesProvider);
 
     void refreshData() {
@@ -57,7 +57,9 @@ class CarLimpieza extends ConsumerWidget {
           IconButton(
             icon: Icon(
               Icons.delete,
-              color: selectedFiles.isNotEmpty ? Colors.green.shade700 : Colors.grey,
+              color: selectedFiles.isNotEmpty
+                  ? Colors.green.shade700
+                  : Colors.grey,
             ),
             onPressed: selectedFiles.isNotEmpty
                 ? () async {
@@ -77,14 +79,15 @@ class CarLimpieza extends ConsumerWidget {
                               backgroundColor: Colors.red,
                             ),
                             onPressed: () async {
-                              Navigator.pop(context);
                               try {
                                 await deleteSelectedFiles(ref);
                                 if (context.mounted) {
-                                  ScaffoldMessenger.of(context).clearSnackBars();
+                                  ScaffoldMessenger.of(context)
+                                      .clearSnackBars();
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
-                                      content: Text('Registros eliminados correctamente'),
+                                      content: Text(
+                                          'Registros eliminados correctamente'),
                                       backgroundColor: Colors.green,
                                     ),
                                   );
@@ -92,10 +95,12 @@ class CarLimpieza extends ConsumerWidget {
                                 refreshData();
                               } catch (e) {
                                 if (context.mounted) {
-                                  ScaffoldMessenger.of(context).clearSnackBars();
+                                  ScaffoldMessenger.of(context)
+                                      .clearSnackBars();
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text('Error al eliminar registros: $e'),
+                                      content: Text(
+                                          'Error al eliminar registros: $e'),
                                       backgroundColor: Colors.red,
                                     ),
                                   );
@@ -233,7 +238,8 @@ class CarLimpieza extends ConsumerWidget {
                     itemCount: relevantFiles.length,
                     itemBuilder: (context, index) {
                       final fileInfo = relevantFiles[index];
-                      final isSelected = selectedFiles.contains(fileInfo['fileName']);
+                      final isSelected =
+                          selectedFiles.contains(fileInfo['fileName']);
                       return Card(
                         margin: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 4),
@@ -242,8 +248,8 @@ class CarLimpieza extends ConsumerWidget {
                           decoration: BoxDecoration(
                             border: Border(
                               left: BorderSide(
-                                color: fileInfo['isOpen'] 
-                                    ? Colors.green.shade600 
+                                color: fileInfo['isOpen']
+                                    ? Colors.green.shade600
                                     : Colors.red.shade600,
                                 width: 4,
                               ),
@@ -275,24 +281,27 @@ class CarLimpieza extends ConsumerWidget {
                                 ),
                                 const SizedBox(width: 8),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: fileInfo['isOpen'] 
-                                        ? Colors.green.shade50 
+                                    color: fileInfo['isOpen']
+                                        ? Colors.green.shade50
                                         : Colors.red.shade50,
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
-                                      color: fileInfo['isOpen'] 
-                                          ? Colors.green.shade200 
+                                      color: fileInfo['isOpen']
+                                          ? Colors.green.shade200
                                           : Colors.red.shade200,
                                     ),
                                   ),
                                   child: Text(
-                                    fileInfo['isOpen'] ? 'Completada' : 'Pendiente',
+                                    fileInfo['isOpen']
+                                        ? 'Completada'
+                                        : 'Pendiente',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: fileInfo['isOpen'] 
-                                          ? Colors.green.shade700 
+                                      color: fileInfo['isOpen']
+                                          ? Colors.green.shade700
                                           : Colors.red.shade700,
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -332,50 +341,44 @@ class CarLimpieza extends ConsumerWidget {
                                       vertical: 8,
                                     ),
                                   ),
-                                  icon: const Icon(Icons.file_download, size: 18),
+                                  icon:
+                                      const Icon(Icons.file_download, size: 18),
                                   label: const Text('Descargar'),
                                   onPressed: () async {
                                     try {
-                                      showDialog(
-                                        context: context,
-                                        barrierDismissible: false,
-                                        builder: (context) => const Center(
-                                          child: Card(
-                                            child: Padding(
-                                              padding: EdgeInsets.all(16),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  CircularProgressIndicator(
-                                                    valueColor: AlwaysStoppedAnimation<
-                                                        Color>(Colors.green),
-                                                  ),
-                                                  SizedBox(height: 16),
-                                                  Text('Descargando archivo...'),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-
-                                      final firebaseFile = await _getFirebaseFile(
-                                          fileInfo['fileName']);
+                                      final firebaseFile =
+                                          await _getFirebaseFile(
+                                              fileInfo['fileName']);
                                       if (firebaseFile != null) {
-                                        Navigator.pop(context);
-                                        await _downloadFile(firebaseFile, context);
-                                      } else {
-                                        throw Exception(
-                                            'No se pudo obtener el archivo');
+                                        await _downloadFile(
+                                            firebaseFile, context);
+
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content:
+                                                  Text('Archivo descargado'),
+                                              backgroundColor: Colors.green,
+                                              duration: Duration(seconds: 2),
+                                            ),
+                                          );
+                                        }
                                       }
                                     } catch (e) {
-                                      Navigator.pop(context);
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text('Error: $e'),
-                                          backgroundColor: Colors.red,
-                                        ),
-                                      );
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context)
+                                            .clearSnackBars();
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(e.toString()),
+                                            backgroundColor: Colors.red,
+                                            duration:
+                                                const Duration(seconds: 2),
+                                          ),
+                                        );
+                                      }
                                     }
                                   },
                                 ),
@@ -434,7 +437,8 @@ class CarLimpieza extends ConsumerWidget {
 
   Future<FirebaseFile?> _getFirebaseFile(String fileName) async {
     try {
-      final ref = FirebaseStorage.instance.ref().child('chequeos_limpieza/$fileName');
+      final ref =
+          FirebaseStorage.instance.ref().child('chequeos_limpieza/$fileName');
       final url = await ref.getDownloadURL();
       return FirebaseFile(ref: ref, name: fileName, url: url);
     } catch (e) {
@@ -442,22 +446,11 @@ class CarLimpieza extends ConsumerWidget {
     }
   }
 
-  Future _downloadFile(FirebaseFile file, BuildContext context) async {
+  Future<void> _downloadFile(FirebaseFile file, BuildContext context) async {
     try {
       await FirebaseApi.downloadFile(file.ref);
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Archivo descargado: ${file.name}')),
-        );
-      }
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al descargar archivo: $e')),
-        );
-      }
+      throw Exception('Error al descargar archivo: $e');
     }
   }
 }
