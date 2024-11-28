@@ -10,7 +10,12 @@ import '../../home/screens/home_screen.dart';
 import '../service/update_preoperacional.dart';
 
 class UpdatePreoperacional extends ConsumerStatefulWidget {
-  const UpdatePreoperacional({super.key});
+  final Function(bool) onSavingStateChanged;
+
+  const UpdatePreoperacional({
+    required this.onSavingStateChanged,
+    super.key,
+  });
 
   @override
   SaveWidgetState createState() => SaveWidgetState();
@@ -34,12 +39,14 @@ class SaveWidgetState extends ConsumerState<UpdatePreoperacional> {
               setState(() {
                 _isLoading = true;
               });
+              widget.onSavingStateChanged(true);
 
               try {
-                ref.read(preoperacionalDbProvider.notifier).updateFechas(isOpen);
+                ref
+                    .read(preoperacionalDbProvider.notifier)
+                    .updateFechas(isOpen);
                 await updatePreoperacional(
                   ref.read(preoperacionalDbProvider),
-
                   ref,
                 );
                 await dataJson(
@@ -56,6 +63,7 @@ class SaveWidgetState extends ConsumerState<UpdatePreoperacional> {
                 setState(() {
                   _isLoading = false;
                 });
+                widget.onSavingStateChanged(false);
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(

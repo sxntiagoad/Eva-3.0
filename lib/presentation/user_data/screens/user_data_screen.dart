@@ -43,7 +43,12 @@ class _UserDataScreenState extends ConsumerState<UserDataScreen> {
               isEditing ? Icons.check_circle_outline : Icons.edit_outlined,
               color: _softBlue,
             ),
-            onPressed: () => userDataNotifier.toggleEditing(),
+            onPressed: () {
+              if (isEditing) {
+                userDataNotifier.saveChanges();
+              }
+              userDataNotifier.toggleEditing();
+            },
           ),
         ],
       ),
@@ -106,8 +111,8 @@ class _UserDataScreenState extends ConsumerState<UserDataScreen> {
           label,
           style: const TextStyle(
             color: Colors.blue,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
           ),
         ),
         const SizedBox(height: 8),

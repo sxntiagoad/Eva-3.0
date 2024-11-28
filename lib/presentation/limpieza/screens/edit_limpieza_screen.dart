@@ -21,32 +21,19 @@ class EditLimpiezaScreen extends ConsumerStatefulWidget {
 }
 
 class _EditLimpiezaScreenState extends ConsumerState<EditLimpiezaScreen> {
-  bool isLoading = false;
+  bool _isSaving = false;
+
+  void setSaving(bool value) {
+    setState(() {
+      _isSaving = value;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    
-    // Print para ver los datos que llegan inicialmente
-    print('EditLimpiezaScreen - Datos iniciales:');
-    print('DocId: ${widget.limpieza.docId}');
-    print('CarId: ${widget.limpieza.carId}');
-    print('Fecha: ${widget.limpieza.fecha}');
-    print('IsOpen: ${widget.limpieza.isOpen}');
-    print('Inspecciones: ${widget.limpieza.inspecciones}');
-    
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Print antes de reemplazar
-      print('Antes de replaceLimpieza:');
-      final currentState = ref.read(limpiezaDbProvider);
-      print('Estado actual: $currentState');
-      
       ref.read(limpiezaDbProvider.notifier).replaceLimpieza(widget.limpieza);
-      
-      // Print después de reemplazar
-      print('Después de replaceLimpieza:');
-      final newState = ref.read(limpiezaDbProvider);
-      print('Nuevo estado: $newState');
     });
   }
 
@@ -54,143 +41,192 @@ class _EditLimpiezaScreenState extends ConsumerState<EditLimpiezaScreen> {
   Widget build(BuildContext context) {
     final limpieza = ref.watch(limpiezaDbProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Editar Limpieza'),
-        actions: [
-          IconButton(
-            icon: Icon(
-              limpieza.isOpen ? Icons.lock_open : Icons.lock,
-              color: limpieza.isOpen ? Colors.green : Colors.red,
+    return PopScope(
+      canPop: !_isSaving,
+      onPopInvoked: (didPop) {
+        if (_isSaving) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Por favor, espere mientras se actualiza la limpieza',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              backgroundColor: Colors.orange,
+              duration: Duration(seconds: 2),
             ),
-            onPressed: () {
-              ref.read(limpiezaDbProvider.notifier).updateIsOpen(!limpieza.isOpen);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    limpieza.isOpen ? 'Cerrando limpieza...' : 'Abriendo limpieza...',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          );
+        }
+      },
+      child: Stack(
+        children: [
+          Scaffold(
+            appBar: AppBar(
+              title: const Text('Editar Limpieza'),
+              actions: [
+                IconButton(
+                  icon: Icon(
+                    limpieza.isOpen ? Icons.lock_open : Icons.lock,
+                    color: limpieza.isOpen ? Colors.green : Colors.red,
                   ),
-                  backgroundColor: !limpieza.isOpen ? Colors.green : Colors.red,
+                  onPressed: _isSaving
+                      ? null
+                      : () {
+                          ref.read(limpiezaDbProvider.notifier).updateIsOpen(!limpieza.isOpen);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                limpieza.isOpen ? 'Cerrando limpieza...' : 'Abriendo limpieza...',
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              backgroundColor: !limpieza.isOpen ? Colors.green : Colors.red,
+                            ),
+                          );
+                        },
                 ),
-              );
-            },
-          ),
-        ],
-      ),
-      body: CustomScrollView(
-        slivers: [
-          SliverPadding(
-            padding: const EdgeInsets.all(16.0),
-            sliver: SliverToBoxAdapter(
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: CarSelector(
-                    selectedCarId: limpieza.carId,
-                    onCarSelected: (carId) {
-                      ref.read(limpiezaDbProvider.notifier).updateCarId(carId);
+              ],
+            ),
+            body: AbsorbPointer(
+              absorbing: _isSaving,
+              child: CustomScrollView(
+                slivers: [
+                  SliverPadding(
+                    padding: const EdgeInsets.all(16.0),
+                    sliver: SliverToBoxAdapter(
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: CarSelector(
+                            selectedCarId: limpieza.carId,
+                            onCarSelected: (carId) {
+                              ref.read(limpiezaDbProvider.notifier).updateCarId(carId);
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  const SliverToBoxAdapter(
+                    child: SizedBox(height: 16),
+                  ),
+                  
+                  ListCategory(
+                    inspecciones: limpieza.inspecciones,
+                    onUpdateInspeccion: (category, day, value) {
+                      ref.read(limpiezaDbProvider.notifier).updateInspeccion(category, day, value);
                     },
                   ),
+                  
+                  const SliverToBoxAdapter(
+                    child: SizedBox(height: 80),
+                  ),
+                ],
+              ),
+            ),
+            bottomNavigationBar: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SizedBox(
+                height: 60,
+                child: FilledButton(
+                  onPressed: _isSaving
+                      ? null
+                      : () async {
+                          setState(() => _isSaving = true);
+                          try {
+                            await ref.read(limpiezaDbProvider.notifier).updateLimpiezaInFirebase();
+                            
+                            try {
+                              await limpiezaDataJson(
+                                ref: ref,
+                                limpieza: ref.read(limpiezaDbProvider),
+                                idDoc: widget.limpieza.docId,
+                              );
+
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Limpieza actualizada correctamente'),
+                                    backgroundColor: Colors.blue,
+                                  ),
+                                );
+                                context.pop();
+                              }
+                            } catch (excelError) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'La limpieza se actualizó pero hubo un error al actualizar el Excel: $excelError'
+                                    ),
+                                    backgroundColor: Colors.orange,
+                                  ),
+                                );
+                                context.pop();
+                              }
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error al actualizar: $e'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          } finally {
+                            if (mounted) setState(() => _isSaving = false);
+                          }
+                        },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+                      if (states.contains(MaterialState.disabled)) return Colors.grey;
+                      return limpieza.isOpen ? Colors.green : Colors.red;
+                    }),
+                  ),
+                  child: _isSaving
+                      ? const SizedBox(
+                          width: 30,
+                          height: 30,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 3,
+                          ),
+                        )
+                      : Text(
+                          limpieza.isOpen ? 'Actualizar (Abierta)' : 'Actualizar (Cerrada)',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ),
             ),
           ),
-          
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 16),
-          ),
-          
-          ListCategory(
-            inspecciones: limpieza.inspecciones,
-            onUpdateInspeccion: (category, day, value) {
-              ref.read(limpiezaDbProvider.notifier).updateInspeccion(category, day, value);
-            },
-          ),
-          
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 80),
-          ),
-        ],
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SizedBox(
-          height: 60,
-          child: FilledButton(
-            onPressed: isLoading ? null : () async {
-              setState(() => isLoading = true);
-              try {
-                // Primero actualizamos en Firebase
-                await ref.read(limpiezaDbProvider.notifier).updateLimpiezaInFirebase();
-                
-                // Luego actualizamos el archivo Excel
-                try {
-                  await limpiezaDataJson(
-                    ref: ref,
-                    limpieza: ref.read(limpiezaDbProvider),
-                    idDoc: widget.limpieza.docId,
-                  );
-
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Limpieza actualizada correctamente'),
-                        backgroundColor: Colors.blue,
-                      ),
-                    );
-                    context.pop();
-                  }
-                } catch (excelError) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'La limpieza se actualizó pero hubo un error al actualizar el Excel: $excelError'
+          if (_isSaving)
+            Container(
+              color: Colors.black54,
+              child: const Center(
+                child: Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircularProgressIndicator(),
+                        SizedBox(height: 20),
+                        Text(
+                          'Actualizando limpieza...\nPor favor, espere.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
                         ),
-                        backgroundColor: Colors.orange,
-                      ),
-                    );
-                    context.pop();
-                  }
-                }
-              } catch (e) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Error al actualizar: $e'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
-              } finally {
-                if (mounted) setState(() => isLoading = false);
-              }
-            },
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-                if (states.contains(MaterialState.disabled)) return Colors.grey;
-                return limpieza.isOpen ? Colors.green : Colors.red;
-              }),
-            ),
-            child: isLoading
-                ? const SizedBox(
-                    width: 30,
-                    height: 30,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 3,
-                    ),
-                  )
-                : Text(
-                    limpieza.isOpen ? 'Actualizar (Abierta)' : 'Actualizar (Cerrada)',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      ],
                     ),
                   ),
-          ),
-        ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

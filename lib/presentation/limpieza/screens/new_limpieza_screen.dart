@@ -6,85 +6,149 @@ import '../widgets/car_selector.dart';
 import '../widgets/list_category.dart';
 import '../../../providers/limpieza/new_limpieza_provider.dart';
 
-class NewLimpiezaScreen extends ConsumerWidget {
+class NewLimpiezaScreen extends ConsumerStatefulWidget {
   static const name = 'new-limpieza-screen';
   const NewLimpiezaScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<NewLimpiezaScreen> createState() => _NewLimpiezaScreenState();
+}
+
+class _NewLimpiezaScreenState extends ConsumerState<NewLimpiezaScreen> {
+  bool _isSaving = false;
+
+  void setSaving(bool value) {
+    setState(() {
+      _isSaving = value;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final limpieza = ref.watch(newLimpiezaProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Nuevo Chequeo de Limpieza'),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: IconButton(
-              icon: Icon(
-                limpieza.isOpen ? Icons.lock_open_rounded : Icons.lock_rounded,
-                color: limpieza.isOpen ? Colors.green : Colors.red,
+    return PopScope(
+      canPop: !_isSaving,
+      onPopInvoked: (didPop) {
+        if (_isSaving) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Por favor, espere mientras se guarda la limpieza',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              onPressed: () {
-                ref.read(newLimpiezaProvider.notifier).toggleIsOpen();
-
-                // Mostrar SnackBar según el estado
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      limpieza.isOpen
-                          ? 'Cerrando chequeo de limpieza...'
-                          : 'Abriendo chequeo de limpieza...',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+              backgroundColor: Colors.orange,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      },
+      child: Stack(
+        children: [
+          Scaffold(
+            appBar: AppBar(
+              title: const Text('Nuevo Chequeo de Limpieza'),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: IconButton(
+                    icon: Icon(
+                      limpieza.isOpen ? Icons.lock_open_rounded : Icons.lock_rounded,
+                      color: limpieza.isOpen ? Colors.green : Colors.red,
+                    ),
+                    onPressed: _isSaving
+                        ? null
+                        : () {
+                            ref.read(newLimpiezaProvider.notifier).toggleIsOpen();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  limpieza.isOpen
+                                      ? 'Cerrando chequeo de limpieza...'
+                                      : 'Abriendo chequeo de limpieza...',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                backgroundColor: !limpieza.isOpen
+                                    ? Colors.green
+                                    : Colors.red,
+                                duration: const Duration(seconds: 2),
+                              ),
+                            );
+                          },
+                  ),
+                ),
+              ],
+            ),
+            body: AbsorbPointer(
+              absorbing: _isSaving,
+              child: CustomScrollView(
+                slivers: [
+                  const SliverPadding(
+                    padding: EdgeInsets.all(16.0),
+                    sliver: SliverToBoxAdapter(
+                      child: Card(
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: CarSelector(),
+                        ),
                       ),
                     ),
-                    backgroundColor: !limpieza
-                            .isOpen // Invertido porque el estado aún no se ha actualizado
-                        ? Colors.green
-                        : Colors.red,
-                    duration: const Duration(seconds: 2),
                   ),
-                );
-              },
+                  const SliverToBoxAdapter(child: SizedBox(height: 16)),
+                  ListCategory(
+                    onUpdateInspeccion: (category, day, value) {
+                      ref.read(newLimpiezaProvider.notifier).updateDayOfWeek(
+                            category,
+                            day,
+                            value,
+                          );
+                    },
+                  ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 80)),
+                ],
+              ),
             ),
+            bottomNavigationBar: SaveButtonLimpieza(onSavingStateChanged: setSaving),
           ),
-        ],
-      ),
-      body: CustomScrollView(
-        slivers: [
-          const SliverPadding(
-            padding: EdgeInsets.all(16.0),
-            sliver: SliverToBoxAdapter(
-              child: Card(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: CarSelector(),
+          if (_isSaving)
+            Container(
+              color: Colors.black54,
+              child: const Center(
+                child: Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircularProgressIndicator(),
+                        SizedBox(height: 20),
+                        Text(
+                          'Guardando limpieza...\nPor favor, espere.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-          const SliverToBoxAdapter(child: SizedBox(height: 16)),
-          ListCategory(
-            onUpdateInspeccion: (category, day, value) {
-              ref.read(newLimpiezaProvider.notifier).updateDayOfWeek(
-                    category,
-                    day,
-                    value,
-                  );
-            },
-          ),
-          const SliverToBoxAdapter(child: SizedBox(height: 80)),
         ],
       ),
-      bottomNavigationBar: const SaveButtonLimpieza(),
     );
   }
 }
 
 class SaveButtonLimpieza extends ConsumerStatefulWidget {
-  const SaveButtonLimpieza({super.key});
+  final Function(bool) onSavingStateChanged;
+
+  const SaveButtonLimpieza({
+    required this.onSavingStateChanged,
+    super.key,
+  });
 
   @override
   SaveButtonLimpiezaState createState() => SaveButtonLimpiezaState();
@@ -100,8 +164,7 @@ class SaveButtonLimpiezaState extends ConsumerState<SaveButtonLimpieza> {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: SizedBox(
-        // Agregamos SizedBox para controlar el tamaño
-        height: 60, // Altura del botón
+        height: 60,
         child: FilledButton(
           onPressed: limpieza.carId.isEmpty || isLoading
               ? null
@@ -109,31 +172,15 @@ class SaveButtonLimpiezaState extends ConsumerState<SaveButtonLimpieza> {
                   setState(() {
                     isLoading = true;
                   });
+                  widget.onSavingStateChanged(true);
 
                   try {
-                    // Mostrar indicador de carga
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(
-                        limpieza.isOpen
-                            ? 'Guardando limpieza como abierta...'
-                            : 'Guardando limpieza como cerrada...',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      backgroundColor:
-                          limpieza.isOpen ? Colors.green : Colors.red,
-                    ));
-
                     final docId = await ref
                             .read(newLimpiezaProvider.notifier)
                             .saveLimpieza() ??
                         '';
 
                     try {
-                      print('OJOPOOOOOOOOOOOOOOOOOOOOO');
-                      print(ref.read(newLimpiezaProvider));
                       await limpiezaDataJson(
                         ref: ref,
                         limpieza: ref.read(newLimpiezaProvider),
@@ -148,10 +195,7 @@ class SaveButtonLimpiezaState extends ConsumerState<SaveButtonLimpieza> {
                         ));
 
                         ref.read(newLimpiezaProvider.notifier).reset();
-
-                        if (context.mounted) {
-                          context.pop();
-                        }
+                        context.pop();
                       }
                     } catch (excelError) {
                       if (context.mounted) {
@@ -171,11 +215,10 @@ class SaveButtonLimpiezaState extends ConsumerState<SaveButtonLimpieza> {
                       ));
                     }
                   } finally {
-                    if (mounted) {
-                      setState(() {
-                        isLoading = false;
-                      });
-                    }
+                    setState(() {
+                      isLoading = false;
+                    });
+                    widget.onSavingStateChanged(false);
                   }
                 },
           style: ButtonStyle(
@@ -188,11 +231,11 @@ class SaveButtonLimpiezaState extends ConsumerState<SaveButtonLimpieza> {
           ),
           child: isLoading
               ? const SizedBox(
-                  width: 30, // Indicador de carga más grande
+                  width: 30,
                   height: 30,
                   child: CircularProgressIndicator(
                     color: Colors.white,
-                    strokeWidth: 3, // Línea más gruesa
+                    strokeWidth: 3,
                   ),
                 )
               : Text(
@@ -200,7 +243,7 @@ class SaveButtonLimpiezaState extends ConsumerState<SaveButtonLimpieza> {
                       ? 'Guardar Limpieza (Abierta)'
                       : 'Guardar Limpieza (Cerrada)',
                   style: const TextStyle(
-                    fontSize: 18, // Texto más grande
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

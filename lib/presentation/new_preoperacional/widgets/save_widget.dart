@@ -10,7 +10,12 @@ import '../../../providers/add_preoperacional.dart';
 import '../../home/screens/home_screen.dart';
 
 class SaveWidget extends ConsumerStatefulWidget {
-  const SaveWidget({super.key});
+  final Function(bool) onSavingStateChanged;
+  
+  const SaveWidget({
+    required this.onSavingStateChanged,
+    super.key,
+  });
 
   @override
   SaveWidgetState createState() => SaveWidgetState();
@@ -34,6 +39,7 @@ class SaveWidgetState extends ConsumerState<SaveWidget> {
               setState(() {
                 _isLoading = true;
               });
+              widget.onSavingStateChanged(true); // Indicar inicio de guardado
 
               try {
                 ref.read(newPreoperacionalProvider.notifier).updateFechas(isOpen);
@@ -56,6 +62,7 @@ class SaveWidgetState extends ConsumerState<SaveWidget> {
                 setState(() {
                   _isLoading = false;
                 });
+                widget.onSavingStateChanged(false); // Indicar fin de guardado
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
