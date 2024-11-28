@@ -33,10 +33,7 @@ class FirebaseApi {
       html.document.body?.children.add(anchor);
       anchor.click();
 
-      // Limpiar el elemento después de un tiempo
-      await Future.delayed(Duration(seconds: 5), () {
-        html.document.body?.children.remove(anchor);
-      });
+      html.document.body?.children.remove(anchor);
     } catch (e) {
       print('Error en descarga web: $e');
       rethrow;

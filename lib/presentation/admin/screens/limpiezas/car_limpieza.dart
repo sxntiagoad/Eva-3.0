@@ -7,15 +7,29 @@ import 'package:eva/providers/limpieza/limpieza_file_provider.dart';
 import 'package:eva/providers/firebase_api.dart';
 import 'package:intl/intl.dart';
 
-class CarLimpieza extends ConsumerWidget {
+class CarLimpieza extends ConsumerStatefulWidget {
   final Car car;
 
   const CarLimpieza({required this.car, super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CarLimpieza> createState() => _CarLimpiezaState();
+}
+
+class _CarLimpiezaState extends ConsumerState<CarLimpieza> {
+  @override
+  void initState() {
+    super.initState();
+    // Limpiar selección cuando la página se inicia
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(selectedFilesProvider.notifier).clearSelection();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final relevantExcelFiles =
-        ref.watch(relevantExcelFilesProvider(car.carPlate));
+        ref.watch(relevantExcelFilesProvider(widget.car.carPlate));
     final selectedFiles = ref.watch(selectedFilesProvider);
 
     void refreshData() {
@@ -32,7 +46,7 @@ class CarLimpieza extends ConsumerWidget {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(car.carPlate,
+            Text(widget.car.carPlate,
                 style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -80,6 +94,7 @@ class CarLimpieza extends ConsumerWidget {
                             ),
                             onPressed: () async {
                               try {
+                                Navigator.pop(context);
                                 await deleteSelectedFiles(ref);
                                 if (context.mounted) {
                                   ScaffoldMessenger.of(context)
@@ -89,6 +104,7 @@ class CarLimpieza extends ConsumerWidget {
                                       content: Text(
                                           'Registros eliminados correctamente'),
                                       backgroundColor: Colors.green,
+                                      duration: Duration(seconds: 2),
                                     ),
                                   );
                                 }
@@ -427,7 +443,7 @@ class CarLimpieza extends ConsumerWidget {
           Navigator.pushNamed(
             context,
             '/edit-limpieza',
-            arguments: car,
+            arguments: widget.car,
           );
         },
         child: const Icon(Icons.add),

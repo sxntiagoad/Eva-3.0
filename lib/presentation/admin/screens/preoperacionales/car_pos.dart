@@ -7,15 +7,29 @@ import 'package:eva/providers/excel_provider.dart';
 import 'package:eva/providers/firebase_api.dart';
 import 'package:intl/intl.dart';
 
-class CarPos extends ConsumerWidget {
+class CarPos extends ConsumerStatefulWidget {
   final Car car;
 
   const CarPos({required this.car, super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CarPos> createState() => _CarPosState();
+}
+
+class _CarPosState extends ConsumerState<CarPos> {
+  @override
+  void initState() {
+    super.initState();
+    // Limpiar selección cuando la página se inicia
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(selectedFilesProvider.notifier).clearSelection();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final relevantExcelFiles =
-        ref.watch(relevantExcelFilesProvider(car.carPlate));
+        ref.watch(relevantExcelFilesProvider(widget.car.carPlate));
     final selectedFiles = ref.watch(selectedFilesProvider);
 
     void refreshData() {
@@ -32,7 +46,7 @@ class CarPos extends ConsumerWidget {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(car.carPlate,
+            Text(widget.car.carPlate,
                 style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
