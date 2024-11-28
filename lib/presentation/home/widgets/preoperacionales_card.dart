@@ -12,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:open_file_plus/open_file_plus.dart';
 
 import '../../../models/preoperacional.dart';
 import '../../../providers/car_provider.dart';
@@ -71,14 +72,38 @@ class _ListTitlePreoperacionalState extends State<_ListTitlePreoperacional> {
         await FileDownloader.downloadFile(
           url: url,
           name: 'preoperacional_${widget.preoperacional.docId}.xlsx',
-          onDownloadCompleted: (path) {
+          onDownloadCompleted: (path) async {
             if (!mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Archivo guardado en Descargas'),
-                backgroundColor: Colors.green,
-              ),
-            );
+            
+            try {
+              final result = await OpenFile.open(path);
+              
+              if (!mounted) return;
+
+              if (result.type == ResultType.done) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Archivo guardado y abierto'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('No se pudo abrir: ${result.message}'),
+                    backgroundColor: Colors.orange,
+                  ),
+                );
+              }
+            } catch (e) {
+              if (!mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Archivo guardado en Descargas'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            }
           },
           onDownloadError: (error) {
             if (!mounted) return;
