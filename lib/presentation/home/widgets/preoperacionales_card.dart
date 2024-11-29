@@ -3,7 +3,7 @@ import 'package:eva/models/car.dart';
 import 'package:eva/models/firebase_file.dart';
 import 'package:eva/presentation/preoperacional/screens/preoperacional_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kDebugMode;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -14,7 +14,6 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../models/preoperacional.dart';
 import '../../../providers/car_provider.dart';
@@ -70,7 +69,21 @@ class _ListTitlePreoperacionalState extends State<_ListTitlePreoperacional> {
       
       if (!mounted) return;
 
-      if (Platform.isAndroid || Platform.isIOS) {
+      if (kIsWeb) {
+        final firebaseFile = await _getFirebaseFile(widget.preoperacional.docId);
+        if (firebaseFile != null) {
+          await downloadFile(firebaseFile, context);
+          
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Archivo descargado'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      } else if (Platform.isAndroid || Platform.isIOS) {
         await FileDownloader.downloadFile(
           url: url,
           name: 'preoperacional_${widget.preoperacional.docId}.xlsx',
