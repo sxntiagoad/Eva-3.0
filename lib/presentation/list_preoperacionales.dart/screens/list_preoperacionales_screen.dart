@@ -14,22 +14,28 @@ class ListPreoperacionalesScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Preoperacionales')),
       body: allPreoperaciones.when(
-        data: (data) => ListView.builder(
-          itemCount: data.length,
-          itemBuilder: (context, index) {
-            if (index == data.length - 1) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 200),
-                child: PreoperacionalesCard(
+        data: (data) => data.isEmpty 
+          ? const Center(
+              child: Text('No hay preoperacionales abiertos',
+                style: TextStyle(fontSize: 16),
+              ),
+            )
+          : ListView.builder(
+              itemCount: data.length,
+              itemBuilder: (context, index) {
+                if (index == data.length - 1) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 200),
+                    child: PreoperacionalesCard(
+                      preoperacional: data[index],
+                    ),
+                  );
+                }
+                return PreoperacionalesCard(
                   preoperacional: data[index],
-                ),
-              );
-            }
-            return PreoperacionalesCard(
-              preoperacional: data[index],
-            );
-          },
-        ),
+                );
+              },
+            ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Error: $error')),
       ),
