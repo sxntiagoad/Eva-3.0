@@ -222,8 +222,8 @@ class SaveButtonLimpiezaState extends ConsumerState<SaveButtonLimpieza> {
                   }
                 },
           style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-              if (states.contains(MaterialState.disabled)) {
+            backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+              if (states.contains(WidgetState.disabled)) {
                 return Colors.grey;
               }
               return limpieza.isOpen ? Colors.green : Colors.red;

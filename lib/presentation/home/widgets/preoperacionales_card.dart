@@ -1,5 +1,6 @@
 import 'package:eva/core/theme/app_theme.dart';
 import 'package:eva/models/car.dart';
+import 'package:eva/models/firebase_file.dart';
 import 'package:eva/presentation/preoperacional/screens/preoperacional_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
@@ -8,11 +9,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:dio/dio.dart';
+import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:open_file_plus/open_file_plus.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../models/preoperacional.dart';
 import '../../../providers/car_provider.dart';
@@ -76,31 +78,33 @@ class _ListTitlePreoperacionalState extends State<_ListTitlePreoperacional> {
             if (!mounted) return;
             
             try {
-              final result = await OpenFile.open(path);
+               final result = await OpenFile.open(
+                  path,
+                  type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // Para archivos .xlsx
+                );
+                
+                if (result.type != ResultType.done) {
+                  throw Exception('No se pudo abrir el archivo: ${result.message}');
+                }
               
-              if (!mounted) return;
-
-              if (result.type == ResultType.done) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Archivo guardado y abierto'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('No se pudo abrir: ${result.message}'),
-                    backgroundColor: Colors.orange,
-                  ),
-                );
-              }
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Archivo descargado correctamente'),
+                  backgroundColor: Colors.green,
+                ),
+              );
             } catch (e) {
               if (!mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Archivo guardado en Descargas'),
+                SnackBar(
+                  content: Text('Archivo guardado en: $path'),
                   backgroundColor: Colors.green,
+                  duration: const Duration(seconds: 5),
+                  action: SnackBarAction(
+                    label: 'OK',
+                    textColor: Colors.white,
+                    onPressed: () {},
+                  ),
                 ),
               );
             }
@@ -189,5 +193,40 @@ class _ListTitlePreoperacionalState extends State<_ListTitlePreoperacional> {
         );
       },
     );
+  }
+  Future<FirebaseFile?> _getFirebaseFile(String fileName) async {
+    try {
+      final ref = FirebaseStorage.instance.ref().child('preoperacionales/$fileName.xlsx');
+      
+      final url = await ref.getDownloadURL();
+      
+      return FirebaseFile(ref: ref, name: fileName, url: url);
+    } catch (e, stackTrace) {
+      return null;
+    }
+  }
+
+  Future<void> downloadFile(FirebaseFile file, BuildContext context) async {
+    try {
+      await FirebaseApi.downloadFile(file.ref);
+      
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Archivo descargado: ${file.name}'),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    } catch (e, stackTrace) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error detallado en downloadFile: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    }
   }
 }

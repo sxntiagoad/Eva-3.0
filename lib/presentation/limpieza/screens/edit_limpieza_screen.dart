@@ -178,8 +178,8 @@ class _EditLimpiezaScreenState extends ConsumerState<EditLimpiezaScreen> {
                           }
                         },
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-                      if (states.contains(MaterialState.disabled)) return Colors.grey;
+                    backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+                      if (states.contains(WidgetState.disabled)) return Colors.grey;
                       return limpieza.isOpen ? Colors.green : Colors.red;
                     }),
                   ),

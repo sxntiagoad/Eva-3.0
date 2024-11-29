@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eva/providers/car_provider.dart';
-import 'package:eva/core/theme/app_theme.dart';
 import 'add_car_page.dart';
 import 'edit_car_page.dart';
 

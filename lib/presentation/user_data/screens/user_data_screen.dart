@@ -15,9 +15,9 @@ class UserDataScreen extends ConsumerStatefulWidget {
 
 class _UserDataScreenState extends ConsumerState<UserDataScreen> {
   // Primero definimos algunos colores constantes
-  final _softBlue = Color(0xFF5B86E5);
-  final _lightBlue = Color(0xFFEDF2FF);
-  final _textBlue = Color(0xFF36455A);
+  final _softBlue = const Color(0xFF5B86E5);
+  final _lightBlue = const Color(0xFFEDF2FF);
+  final _textBlue = const Color(0xFF36455A);
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +161,7 @@ class _UserDataScreenState extends ConsumerState<UserDataScreen> {
         ),
         const SizedBox(height: 8),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
             color: _lightBlue.withOpacity(0.5),
             borderRadius: BorderRadius.circular(12),

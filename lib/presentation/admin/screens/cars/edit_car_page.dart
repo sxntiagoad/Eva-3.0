@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 class EditCarPage extends ConsumerStatefulWidget {
   final String carId;
 
-  const EditCarPage({Key? key, required this.carId}) : super(key: key);
+  const EditCarPage({super.key, required this.carId});
 
   @override
   _EditCarPageState createState() => _EditCarPageState();
@@ -185,7 +185,7 @@ class _EditCarPageState extends ConsumerState<EditCarPage> {
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           alignment: Alignment.centerLeft,
-          backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
           foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
       ),

@@ -5,7 +5,7 @@ import 'package:eva/models/car.dart';
 import 'package:eva/providers/car_provider.dart';
 
 class AddCarPage extends ConsumerStatefulWidget {
-  const AddCarPage({Key? key}) : super(key: key);
+  const AddCarPage({super.key});
 
   @override
   _AddCarPageState createState() => _AddCarPageState();
@@ -58,7 +58,7 @@ class _AddCarPageState extends ConsumerState<AddCarPage> {
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Marca',
                           border: OutlineInputBorder(),
                           prefixIcon: Icon(Icons.directions_car),
@@ -67,7 +67,7 @@ class _AddCarPageState extends ConsumerState<AddCarPage> {
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Modelo',
                           border: OutlineInputBorder(),
                           prefixIcon: Icon(Icons.calendar_today),
@@ -175,7 +175,7 @@ class _AddCarPageState extends ConsumerState<AddCarPage> {
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           alignment: Alignment.centerLeft,
-          backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
           foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
       ),
